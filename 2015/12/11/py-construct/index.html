@@ -5,29 +5,23 @@
   
   <title>使用Python-Construct解析数据和生成协议 | XzAmrzs&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="[TOC]
-[TOC]
-&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)
-1. construct的作用
-&amp;#160; &amp;#160; &amp;#160; &amp;">
+  <meta name="description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)
+construct的作用
+&amp;#160; &amp;#160; &amp;#160; &amp;#160; Construct">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用Python-Construct解析数据和生成协议">
 <meta property="og:url" content="http://yoursite.com/2015/12/11/py-construct/index.html">
 <meta property="og:site_name" content="XzAmrzs's Blog">
-<meta property="og:description" content="[TOC]
-[TOC]
-&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)
-1. construct的作用
-&amp;#160; &amp;#160; &amp;#160; &amp;">
+<meta property="og:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)
+construct的作用
+&amp;#160; &amp;#160; &amp;#160; &amp;#160; Construct">
 <meta property="og:image" content="http://7xox9y.com1.z0.glb.clouddn.com/RFIDprotocol.jpg">
-<meta property="og:updated_time" content="2015-12-11T08:12:22.115Z">
+<meta property="og:updated_time" content="2015-12-11T09:38:56.294Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Python-Construct解析数据和生成协议">
-<meta name="twitter:description" content="[TOC]
-[TOC]
-&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)
-1. construct的作用
-&amp;#160; &amp;#160; &amp;#160; &amp;">
+<meta name="twitter:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)
+construct的作用
+&amp;#160; &amp;#160; &amp;#160; &amp;#160; Construct">
   
     <link rel="alternative" href="/atom.xml" title="XzAmrzs&#39;s Blog" type="application/atom+xml">
   
@@ -198,50 +192,59 @@
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-py-construct" class="article article-type-post" itemscope itemprop="blogPost">
-  
+      <div class="body-wrap"><article id="post-py-construct" class="article article-type-post" itemscope
+         itemprop="blogPost">
+    
     <div class="article-meta">
-      <a href="/2015/12/11/py-construct/" class="article-date">
-  	<time datetime="2015-12-11T08:12:22.115Z" itemprop="datePublished">2015-12-11</time>
+        <a href="/2015/12/11/py-construct/" class="article-date">
+  	<time datetime="2015-12-11T09:38:56.295Z" itemprop="datePublished">2015-12-11</time>
 </a>
     </div>
-  
-  <div class="article-inner">
     
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
+    <div class="article-inner">
         
+        <input type="hidden" class="isFancy"/>
+        
+        
+        <header class="article-header">
+            
   
     <h1 class="article-title" itemprop="name">
       使用Python-Construct解析数据和生成协议
     </h1>
   
 
-      </header>
-      
-      <div class="article-info article-info-post">
+        </header>
         
+        <div class="article-info article-info-post">
+            
 	<div class="article-tag tagcloud">
 		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/construct/">construct</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
 	</div>
 
-        
+            
 
-        <div class="clearfix"></div>
-      </div>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>[TOC]</p>
-<p>[TOC]</p>
-<p>&#160; &#160; &#160; &#160;直接切入正题，我们知道在<code>Python</code>中解析数据包有一个内置的<code>Struct</code>库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)</p>
-<h2 id="1-_construct的作用">1. construct的作用</h2><blockquote>
+            <div class="clearfix"></div>
+        </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+            <!-- Table of Contents -->
+            
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#construct的作用"><span class="toc-number">1.</span> <span class="toc-text">construct的作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用法实例"><span class="toc-number">2.</span> <span class="toc-text">用法实例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用法讲解"><span class="toc-number">3.</span> <span class="toc-text">用法讲解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Fields"><span class="toc-number">3.1.</span> <span class="toc-text">Fields</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Structs"><span class="toc-number">3.2.</span> <span class="toc-text">Structs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Containers"><span class="toc-number">3.3.</span> <span class="toc-text">Containers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Building"><span class="toc-number">3.4.</span> <span class="toc-text">Building</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#嵌套使用"><span class="toc-number">3.5.</span> <span class="toc-text">嵌套使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Embedding"><span class="toc-number">3.6.</span> <span class="toc-text">Embedding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Sequences"><span class="toc-number">3.7.</span> <span class="toc-text">Sequences</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Repeaters"><span class="toc-number">3.8.</span> <span class="toc-text">Repeaters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Enums"><span class="toc-number">3.9.</span> <span class="toc-text">Enums</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ctx"><span class="toc-number">3.10.</span> <span class="toc-text">ctx</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Switch"><span class="toc-number">3.11.</span> <span class="toc-text">Switch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他的用法"><span class="toc-number">3.12.</span> <span class="toc-text">其他的用法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实战仿写"><span class="toc-number">4.</span> <span class="toc-text">实战仿写</span></a></li></ol>
+            </div>
+            
+            <p>&#160; &#160; &#160; &#160;直接切入正题，我们知道在<code>Python</code>中解析数据包有一个内置的<code>Struct</code>库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)</p>
+<h2 id="construct的作用">construct的作用</h2><blockquote>
 <p>&#160; &#160; &#160; &#160; Construct is a powerful declarative parser (and builder) for binary data.</p>
 <p>&#160; &#160; &#160; &#160;Instead of writing imperative code to parse a piece of data, you declaratively define a data structure that describes your data. As this data structure is not code, you can use it in one direction to parse data into Pythonic objects, and in the other direction, convert (“build”) objects into binary data.</p>
 <p>&#160; &#160; &#160; &#160;The library provides both simple, atomic constructs (such as integers of various sizes), as well as composite ones which allow you form hierarchical structures of increasing complexity. Construct features bit and byte granularity, easy debugging and testing, an easy-to-extend subclass system, and lots of primitive constructs to make your work easier:</p>
+</blockquote>
+<a id="more"></a>
+<blockquote>
 <ul>
 <li>Fields: raw bytes or numerical types</li>
 <li>Structs and Sequences: combine simpler constructs into more complex ones</li>
@@ -253,12 +256,12 @@
 <li>Pointers: jump from here to there in the data stream</li>
 </ul>
 </blockquote>
-<h2 id="2-_用法实例">2. 用法实例</h2><p>&#160; &#160; &#160; &#160;首先解析数据肯定要协议，我们首先来看一段解析RFID数据包的协议<br><strong>阅读器工作正常时的响应报文（READER→PC）：</strong><br><img src="http://7xox9y.com1.z0.glb.clouddn.com/RFIDprotocol.jpg" alt="*RFID协议例子*"></p>
+<h2 id="用法实例">用法实例</h2><p>&#160; &#160; &#160; &#160;首先解析数据肯定要协议，我们首先来看一段解析RFID数据包的协议<br><strong>阅读器工作正常时的响应报文（READER→PC）：</strong><br><img src="http://7xox9y.com1.z0.glb.clouddn.com/RFIDprotocol.jpg" alt="*RFID协议例子*"></p>
 <p>对应的Construct的编写方法如下:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Constructor</span><span class="params">(object)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="comment"># 接收数据的数据格式定义</span></span><br><span class="line">		self.F1 = Struct(<span class="string">"sub"</span>,</span><br><span class="line">		                 UBInt8(<span class="string">"readerID"</span>),</span><br><span class="line">		                 UBInt8(<span class="string">"packet_len"</span>),</span><br><span class="line">		                 UBInt8(<span class="string">"status"</span>),</span><br><span class="line">		                 Array(<span class="keyword">lambda</span> ctx: (</span><br><span class="line">			                                   ctx.packet_len - <span class="number">2</span> - <span class="number">1</span> - <span class="number">1</span> - <span class="number">1</span> - <span class="number">1</span> - <span class="number">2</span>) / <span class="number">6</span>,</span><br><span class="line">		                       Struct(<span class="string">"blocks"</span>,</span><br><span class="line">		                              Array(<span class="number">3</span>, UBInt8(<span class="string">'cardID'</span>)),</span><br><span class="line">		                              UBInt8(<span class="string">'triggerID'</span>),</span><br><span class="line">		                              UBInt16(<span class="string">'relativeTime'</span>)</span><br><span class="line">		                              )</span><br><span class="line">		                       )</span><br><span class="line">		                 )</span><br><span class="line">        </span><br><span class="line">		self.F2=Struct(<span class="string">"sub"</span>, UBInt8(<span class="string">"packet_len"</span>), UBInt8(<span class="string">"readerID"</span>))</span><br><span class="line">		self.F3=Struct(<span class="string">"sub"</span>, UBInt8(<span class="string">"packet_len"</span>), UBInt8(<span class="string">"result"</span>))</span><br><span class="line">		self.F4=Struct(<span class="string">"sub"</span>, UBInt8(<span class="string">"packet_len"</span>), UBInt8(<span class="string">"rssl"</span>))</span><br><span class="line">        </span><br><span class="line">		self.constructFrame = Struct(<span class="string">"frame"</span>,</span><br><span class="line">                                     OptionalGreedyRange(</span><br><span class="line">                                         Struct(<span class="string">"packets"</span>,</span><br><span class="line">                                                UBInt16(<span class="string">"header"</span>),</span><br><span class="line">                                                Enum(UBInt8(<span class="string">"cmdcode"</span>),</span><br><span class="line">                                                     F1=<span class="number">0xF1</span>,</span><br><span class="line">                                                     F2=<span class="number">0xF2</span>,</span><br><span class="line">                                                     F3=<span class="number">0xF3</span>,</span><br><span class="line">                                                     F4=<span class="number">0xF4</span>,</span><br><span class="line">                                                     ),</span><br><span class="line">                                                Switch(<span class="string">"datas"</span>, <span class="keyword">lambda</span> ctx: ctx.cmdcode, &#123;</span><br><span class="line">                                                    <span class="string">"F1"</span>: Embed(self.F1),</span><br><span class="line">                                                    <span class="string">"F2"</span>: Embed(self.F2),</span><br><span class="line">                                                    <span class="string">"F3"</span>: Embed(self.F3),</span><br><span class="line">                                                    <span class="string">"F4"</span>: Embed(self.F4),</span><br><span class="line"></span><br><span class="line">                                                &#125;</span><br><span class="line">                                                       ),</span><br><span class="line">                                                UBInt16(<span class="string">"crc"</span>),</span><br><span class="line">                                                )</span><br><span class="line">                                     ),</span><br><span class="line">                                     OptionalGreedyRange(</span><br><span class="line">                                         UBInt8(<span class="string">"leftovers"</span>),</span><br><span class="line">                                     ),</span><br><span class="line">                                     )</span><br></pre></td></tr></table></figure>
 <p>测试数据:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rfid = Constructor()</span><br><span class="line">data = rfid.parse_pkgs(</span><br><span class="line">    <span class="string">'\xFF\xFF\xF1\x07\x26\x05\x00\x13\x9A\x00\x00\x1D\x80\x13\x8E\x00\x00\x1D\x00\x13\x8C\x00\x00\x1D\x00\x13\x8D\x00\x00\x15\x80\x13\x94\x00\x00\x13\x77\xF9'</span>)</span><br><span class="line"><span class="keyword">print</span> data[<span class="number">0</span>]</span><br></pre></td></tr></table></figure></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    Container:</span><br><span class="line">        header = <span class="number">65535</span></span><br><span class="line">        cmdcode = <span class="string">'F1'</span></span><br><span class="line">        readerID = <span class="number">7</span></span><br><span class="line">        packet_len = <span class="number">38</span></span><br><span class="line">        status = <span class="number">5</span></span><br><span class="line">        blocks = [</span><br><span class="line">            Container:</span><br><span class="line">                cardID = [</span><br><span class="line">                    <span class="number">0</span></span><br><span class="line">                    <span class="number">19</span></span><br><span class="line">                    <span class="number">154</span></span><br><span class="line">                ]</span><br><span class="line">                triggerID = <span class="number">0</span></span><br><span class="line">                relativeTime = <span class="number">29</span></span><br><span class="line">            Container:</span><br><span class="line">                cardID = [</span><br><span class="line">                    <span class="number">128</span></span><br><span class="line">                    <span class="number">19</span></span><br><span class="line">                    <span class="number">142</span></span><br><span class="line">                ]</span><br><span class="line">                triggerID = <span class="number">0</span></span><br><span class="line">                relativeTime = <span class="number">29</span></span><br><span class="line">            Container:</span><br><span class="line">                cardID = [</span><br><span class="line">                    <span class="number">0</span></span><br><span class="line">                    <span class="number">19</span></span><br><span class="line">                    <span class="number">140</span></span><br><span class="line">                ]</span><br><span class="line">                triggerID = <span class="number">0</span></span><br><span class="line">                relativeTime = <span class="number">29</span></span><br><span class="line">            Container:</span><br><span class="line">                cardID = [</span><br><span class="line">                    <span class="number">0</span></span><br><span class="line">                    <span class="number">19</span></span><br><span class="line">                    <span class="number">141</span></span><br><span class="line">                ]</span><br><span class="line">                triggerID = <span class="number">0</span></span><br><span class="line">                relativeTime = <span class="number">21</span></span><br><span class="line">            Container:</span><br><span class="line">                cardID = [</span><br><span class="line">                    <span class="number">128</span></span><br><span class="line">                    <span class="number">19</span></span><br><span class="line">                    <span class="number">148</span></span><br><span class="line">                ]</span><br><span class="line">                triggerID = <span class="number">0</span></span><br><span class="line">                relativeTime = <span class="number">19</span></span><br><span class="line">        ]</span><br><span class="line">        crc = <span class="number">30713</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-<h2 id="3-_用法讲解">3. 用法讲解</h2><h3 id="Fields">Fields</h3><p><code>Fields</code>是<code>Construct</code>中最基础的用法，所以的其他用法都是基于<code>Fields</code>构成的，它们负责<strong>parse</strong>(从数据流中读数据)和<strong>build</strong>(生成一个对象并把它写到数据流)。<code>Construct</code>中有许多的<code>Fields</code>，每一个服务于不同的数据类型(数字的，布尔类型的，字符串类型的)<br>例子:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span><span class="keyword">from</span> construct <span class="keyword">import</span> UBInt16, ULInt16</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>UBInt16(<span class="string">"foo"</span>).parse(<span class="string">"\x01\x02"</span>)  <span class="comment"># Unsigned, big endian 8-bit integer</span></span><br><span class="line"><span class="number">258</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>ULInt16(<span class="string">"foo"</span>).parse(<span class="string">"\x01\x02"</span>)  <span class="comment"># Unsigned, little endian 8-bit integer</span></span><br><span class="line"><span class="number">513</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="用法讲解">用法讲解</h2><h3 id="Fields">Fields</h3><p><code>Fields</code>是<code>Construct</code>中最基础的用法，所以的其他用法都是基于<code>Fields</code>构成的，它们负责<strong>parse</strong>(从数据流中读数据)和<strong>build</strong>(生成一个对象并把它写到数据流)。<code>Construct</code>中有许多的<code>Fields</code>，每一个服务于不同的数据类型(数字的，布尔类型的，字符串类型的)<br>例子:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span><span class="keyword">from</span> construct <span class="keyword">import</span> UBInt16, ULInt16</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>UBInt16(<span class="string">"foo"</span>).parse(<span class="string">"\x01\x02"</span>)  <span class="comment"># Unsigned, big endian 8-bit integer</span></span><br><span class="line"><span class="number">258</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>ULInt16(<span class="string">"foo"</span>).parse(<span class="string">"\x01\x02"</span>)  <span class="comment"># Unsigned, little endian 8-bit integer</span></span><br><span class="line"><span class="number">513</span></span><br></pre></td></tr></table></figure></p>
 <p>其中<code>UBInt8(&quot;foo&quot;)</code>就是一个最基本的<code>Fields</code>,至于<code>endian</code>是什么请大家自行百度,但是常用big endian</p>
 <p><strong>其中<code>U</code>可换成<code>S</code>表示符号型，<code>B</code>可换成<code>L</code>表示小端，<code>16</code>表示的是解析的位数:1个字节为8位,2个字节就是16位，<code>foo</code>就是<code>Fields</code>的名字</strong></p>
 <p>Some examples of building:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span><span class="keyword">from</span> construct <span class="keyword">import</span> UBInt16, SBInt16</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>UBInt16(<span class="string">"foo"</span>).build(<span class="number">31337</span>)</span><br><span class="line"><span class="string">'zi'</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>SBInt16(<span class="string">"foo"</span>).build(-<span class="number">31337</span>)</span><br><span class="line"><span class="string">'\x86\x97'</span></span><br></pre></td></tr></table></figure></p>
@@ -313,7 +316,7 @@
 <p><code>If</code>：类似编程语言<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo = Struct(<span class="string">"foo"</span>,</span><br><span class="line"><span class="prompt">... </span>    Flag(<span class="string">"has_options"</span>),</span><br><span class="line"><span class="prompt">... </span>    If(<span class="keyword">lambda</span> ctx: ctx[<span class="string">"has_options"</span>],</span><br><span class="line"><span class="prompt">... </span>        Bytes(<span class="string">"options"</span>, <span class="number">5</span>)</span><br><span class="line"><span class="prompt">... </span>    )</span><br><span class="line"><span class="prompt">... </span>)</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo.parse(<span class="string">"\x01hello"</span>)</span><br><span class="line">Container(has_options = <span class="keyword">True</span>, options = <span class="string">'hello'</span>)</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo.parse(<span class="string">"\x00hello"</span>)</span><br><span class="line">Container(has_options = <span class="keyword">False</span>, options = <span class="keyword">None</span>)</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure></p>
 <p><code>IfThenElse</code>:类似编程语言<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo = Struct(<span class="string">"foo"</span>,</span><br><span class="line"><span class="prompt">... </span>    Byte(<span class="string">"a"</span>),</span><br><span class="line"><span class="prompt">... </span>    IfThenElse(<span class="string">"b"</span>, <span class="keyword">lambda</span> ctx: ctx[<span class="string">"a"</span>] &gt; <span class="number">7</span>,</span><br><span class="line"><span class="prompt">... </span>        UBInt32(<span class="string">"foo"</span>),</span><br><span class="line"><span class="prompt">... </span>        UBInt16(<span class="string">"bar"</span>)</span><br><span class="line"><span class="prompt">... </span>    ),</span><br><span class="line"><span class="prompt">... </span>)</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo.parse(<span class="string">"\x09\xaa\xbb\xcc\xdd"</span>)    <span class="comment"># &lt;-- condition is met</span></span><br><span class="line">Container(a = <span class="number">9</span>, b = <span class="number">2864434397L</span>)</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo.parse(<span class="string">"\x02\xaa\xbb"</span>)            <span class="comment"># &lt;-- condition is not met</span></span><br><span class="line">Container(a = <span class="number">2</span>, b = <span class="number">43707</span>)</span><br></pre></td></tr></table></figure></p>
 <p><strong><code>Value</code>（这个用法在<code>build</code>的时候会很有用）</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo = Struct(<span class="string">"foo"</span>,</span><br><span class="line"><span class="prompt">... </span>    Byte(<span class="string">"a"</span>),</span><br><span class="line"><span class="prompt">... </span>    Value(<span class="string">"b"</span>, <span class="keyword">lambda</span> ctx: ctx[<span class="string">"a"</span>] + <span class="number">7</span>)</span><br><span class="line"><span class="prompt">... </span>)</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo.parse(<span class="string">"\x02"</span>)</span><br><span class="line">Container(a = <span class="number">2</span>, b = <span class="number">9</span>)</span><br></pre></td></tr></table></figure></p>
-<p>##4.实战仿写<br>现在我们根据<code>Xbee</code>通信的数据包格式来仿照着写出一个解析<code>Xbee</code>的<code>Constructor</code><br>首先我们需要知道<code>xbee</code>的<code>7E格式</code>通讯协议<br><strong>Xbee-&gt;PC:</strong></p>
+<h2 id="实战仿写">实战仿写</h2><p>现在我们根据<code>Xbee</code>通信的数据包格式来仿照着写出一个解析<code>Xbee</code>的<code>Constructor</code><br>首先我们需要知道<code>xbee</code>的<code>7E格式</code>通讯协议<br><strong>Xbee-&gt;PC:</strong></p>
 <table>
 <thead>
 <tr>
@@ -433,23 +436,23 @@
 </table>
 <p><strong>这之中最难的其实不是结构该如何写，而是怎么让它在执行build方法的时候把校验值也动态生成出来</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">XbeePacketBuilder</span><span class="params">(object)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="comment"># 接收数据的数据格式定义</span></span><br><span class="line">		self.constructFrame = Struct(<span class="string">"parser"</span>,</span><br><span class="line">				OptionalGreedyRange(</span><br><span class="line">					Struct(<span class="string">"packets"</span>,</span><br><span class="line">						UBInt8(<span class="string">"header"</span>),</span><br><span class="line">						UBInt16(<span class="string">"length"</span>),</span><br><span class="line">						UBInt8(<span class="string">"frameType"</span>),</span><br><span class="line">						UBInt8(<span class="string">"id"</span>),</span><br><span class="line">						UBInt64(<span class="string">"64address"</span>),</span><br><span class="line">						UBInt16(<span class="string">"16address"</span>),</span><br><span class="line">						UBInt8(<span class="string">"broadcast"</span>),</span><br><span class="line">						UBInt8(<span class="string">"options"</span>),</span><br><span class="line">						Array(<span class="keyword">lambda</span> ctx: (ctx.length- <span class="number">1</span> - <span class="number">8</span> - <span class="number">2</span>) / <span class="number">8</span>,</span><br><span class="line">							Embed(Struct(<span class="string">"block"</span>,</span><br><span class="line">									Array(<span class="number">2</span>, UBInt8(<span class="string">"type"</span>)),</span><br><span class="line">									Array(<span class="number">2</span>, UBInt8(<span class="string">"unit"</span>)),</span><br><span class="line">									Array(<span class="number">4</span>, UBInt8(<span class="string">"value"</span>)),</span><br><span class="line">								    ))</span><br><span class="line">						     ),</span><br><span class="line">						UBInt8(<span class="string">"checksum"</span>),</span><br><span class="line">					      ),</span><br><span class="line">					),</span><br><span class="line">				OptionalGreedyRange(</span><br><span class="line">						UBInt8(<span class="string">"leftovers"</span>),</span><br><span class="line">						),</span><br><span class="line">				)</span><br></pre></td></tr></table></figure></p>
 
-      
+            
+        </div>
+        
     </div>
     
-  </div>
-  
     
 <nav id="article-nav">
   
   
-    <a href="/2015/12/05/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2015/12/11/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">看到这篇Blog的人，你们好</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
 </nav>
 
-  
+    
 </article>
 
 
@@ -467,7 +470,6 @@
 	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
 	<!-- JiaThis Button END -->
 </div>
-
 
 
 <div class="duoshuo">
@@ -488,7 +490,6 @@
 	</script>
 	<!-- 多说公共JS代码 end -->
 </div>
-
 
 
 
