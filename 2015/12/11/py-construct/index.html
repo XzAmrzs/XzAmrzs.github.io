@@ -20,7 +20,7 @@
 1. construct的作用
 &amp;#160; &amp;#160; &amp;#160; &amp;">
 <meta property="og:image" content="http://7xox9y.com1.z0.glb.clouddn.com/RFIDprotocol.jpg">
-<meta property="og:updated_time" content="2015-12-11T07:55:30.721Z">
+<meta property="og:updated_time" content="2015-12-11T08:12:22.115Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Python-Construct解析数据和生成协议">
 <meta name="twitter:description" content="[TOC]
@@ -202,7 +202,7 @@
   
     <div class="article-meta">
       <a href="/2015/12/11/py-construct/" class="article-date">
-  	<time datetime="2015-12-11T07:56:52.390Z" itemprop="datePublished">2015-12-11</time>
+  	<time datetime="2015-12-11T08:12:22.115Z" itemprop="datePublished">2015-12-11</time>
 </a>
     </div>
   
@@ -313,9 +313,125 @@
 <p><code>If</code>：类似编程语言<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo = Struct(<span class="string">"foo"</span>,</span><br><span class="line"><span class="prompt">... </span>    Flag(<span class="string">"has_options"</span>),</span><br><span class="line"><span class="prompt">... </span>    If(<span class="keyword">lambda</span> ctx: ctx[<span class="string">"has_options"</span>],</span><br><span class="line"><span class="prompt">... </span>        Bytes(<span class="string">"options"</span>, <span class="number">5</span>)</span><br><span class="line"><span class="prompt">... </span>    )</span><br><span class="line"><span class="prompt">... </span>)</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo.parse(<span class="string">"\x01hello"</span>)</span><br><span class="line">Container(has_options = <span class="keyword">True</span>, options = <span class="string">'hello'</span>)</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo.parse(<span class="string">"\x00hello"</span>)</span><br><span class="line">Container(has_options = <span class="keyword">False</span>, options = <span class="keyword">None</span>)</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure></p>
 <p><code>IfThenElse</code>:类似编程语言<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo = Struct(<span class="string">"foo"</span>,</span><br><span class="line"><span class="prompt">... </span>    Byte(<span class="string">"a"</span>),</span><br><span class="line"><span class="prompt">... </span>    IfThenElse(<span class="string">"b"</span>, <span class="keyword">lambda</span> ctx: ctx[<span class="string">"a"</span>] &gt; <span class="number">7</span>,</span><br><span class="line"><span class="prompt">... </span>        UBInt32(<span class="string">"foo"</span>),</span><br><span class="line"><span class="prompt">... </span>        UBInt16(<span class="string">"bar"</span>)</span><br><span class="line"><span class="prompt">... </span>    ),</span><br><span class="line"><span class="prompt">... </span>)</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo.parse(<span class="string">"\x09\xaa\xbb\xcc\xdd"</span>)    <span class="comment"># &lt;-- condition is met</span></span><br><span class="line">Container(a = <span class="number">9</span>, b = <span class="number">2864434397L</span>)</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo.parse(<span class="string">"\x02\xaa\xbb"</span>)            <span class="comment"># &lt;-- condition is not met</span></span><br><span class="line">Container(a = <span class="number">2</span>, b = <span class="number">43707</span>)</span><br></pre></td></tr></table></figure></p>
 <p><strong><code>Value</code>（这个用法在<code>build</code>的时候会很有用）</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo = Struct(<span class="string">"foo"</span>,</span><br><span class="line"><span class="prompt">... </span>    Byte(<span class="string">"a"</span>),</span><br><span class="line"><span class="prompt">... </span>    Value(<span class="string">"b"</span>, <span class="keyword">lambda</span> ctx: ctx[<span class="string">"a"</span>] + <span class="number">7</span>)</span><br><span class="line"><span class="prompt">... </span>)</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>foo.parse(<span class="string">"\x02"</span>)</span><br><span class="line">Container(a = <span class="number">2</span>, b = <span class="number">9</span>)</span><br></pre></td></tr></table></figure></p>
-<p>##4.实战仿写<br>现在我们根据<code>Xbee</code>通信的数据包格式来仿照着写出一个解析<code>Xbee</code>的<code>Constructor</code><br>首先我们需要知道<code>xbee</code>的<code>7E格式</code>通讯协议<br><strong>Xbee-&gt;PC:</strong><br>|位置|类型|名称|长度|<br>|:–:|:–:|:—:|:—:|<br>|0|包头|header|8bit|<br>|1|包长度|plen|16bit|<br>|2|传输方向|dir|8bit|<br>|3|节点ID|plen|64bit|<br>|4|功能号|funcid|16bit|<br>|6~N-2|数据块数组|data|64bit*N|<br>|N-1|包校验|crc|8bit|</p>
-<p>根据这个我们再来写出一个xbee的解析（不唯一）<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">XbeeConstructor</span><span class="params">(object)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="comment"># 接收数据的数据格式定义</span></span><br><span class="line">		self.constructFrame = Struct(<span class="string">"parser"</span>,</span><br><span class="line">									OptionalGreedyRange(</span><br><span class="line">										 Struct(<span class="string">"packets"</span>,</span><br><span class="line">												UBInt8(<span class="string">"header"</span>),</span><br><span class="line">												UBInt16(<span class="string">"plen"</span>),</span><br><span class="line">												UBInt8(<span class="string">"dir"</span>),</span><br><span class="line">												UBInt64(<span class="string">"nodeid"</span>),</span><br><span class="line">												UBInt16(<span class="string">"funcid"</span>),</span><br><span class="line">												Array(<span class="keyword">lambda</span> ctx: (ctx.plen - <span class="number">1</span> - <span class="number">8</span> - <span class="number">2</span>) / <span class="number">8</span>,</span><br><span class="line">													  Struct(<span class="string">"block"</span>,</span><br><span class="line">															 Array(<span class="number">2</span>, UBInt8(<span class="string">"type"</span>)),</span><br><span class="line">															 Array(<span class="number">2</span>, UBInt8(<span class="string">"unit"</span>)),</span><br><span class="line">															 Array(<span class="number">4</span>, UBInt8(<span class="string">"value"</span>)),</span><br><span class="line">															 )</span><br><span class="line">													  ),</span><br><span class="line">												UBInt8(<span class="string">"crc"</span>),</span><br><span class="line">												),</span><br><span class="line">									 ),</span><br><span class="line">									 OptionalGreedyRange(</span><br><span class="line">										 UBInt8(<span class="string">"leftovers"</span>),</span><br><span class="line">									 ),</span><br><span class="line">									 )</span><br></pre></td></tr></table></figure></p>
-<p>再来看一组要生成的报文，我们这次通过build方法来生成需要发送的指令（实际上都是要写出数据的<code>struct</code>的），这个调用build()方法来生成一个我们想要的数据<br><strong>PC-&gt;Xbee:</strong><br>|位置|名称|长度|<br>|:-:|:-:|:-:|<br>|0|header|8bit|<br>|1|length|16bit|<br>|2|type|8bit|<br>|3|id|8bit|<br>|4|64address|64bit|<br>|5|16address|16bit|<br>|6|broadcast|8bit|<br>|7|options|8bit|<br>|8~N-2|data|8bit<em>N|<br>|N-1|checksum|8bit|<br><em>*这之中最难的其实不是结构该如何写，而是怎么让它在执行build方法的时候把校验值也动态生成出来</em></em><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">XbeePacketBuilder</span><span class="params">(object)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="comment"># 接收数据的数据格式定义</span></span><br><span class="line">		self.constructFrame = Struct(<span class="string">"parser"</span>,</span><br><span class="line">									OptionalGreedyRange(</span><br><span class="line">										 Struct(<span class="string">"packets"</span>,</span><br><span class="line">												UBInt8(<span class="string">"header"</span>),</span><br><span class="line">												UBInt16(<span class="string">"length"</span>),</span><br><span class="line">												UBInt8(<span class="string">"frameType"</span>),</span><br><span class="line">												UBInt8(<span class="string">"id"</span>),</span><br><span class="line">												UBInt64(<span class="string">"64address"</span>),</span><br><span class="line">												UBInt16(<span class="string">"16address"</span>),</span><br><span class="line">												UBInt8(<span class="string">"broadcast"</span>),</span><br><span class="line">												UBInt8(<span class="string">"options"</span>),</span><br><span class="line">												Array(<span class="keyword">lambda</span> ctx: (ctx.length- <span class="number">1</span> - <span class="number">8</span> - <span class="number">2</span>) / <span class="number">8</span>,</span><br><span class="line">													  Embed(Struct(<span class="string">"block"</span>,</span><br><span class="line">															 Array(<span class="number">2</span>, UBInt8(<span class="string">"type"</span>)),</span><br><span class="line">															 Array(<span class="number">2</span>, UBInt8(<span class="string">"unit"</span>)),</span><br><span class="line">															 Array(<span class="number">4</span>, UBInt8(<span class="string">"value"</span>)),</span><br><span class="line">															 ))</span><br><span class="line">													  ),</span><br><span class="line">												UBInt8(<span class="string">"checksum"</span>),</span><br><span class="line">												),</span><br><span class="line">									 ),</span><br><span class="line">									 OptionalGreedyRange(</span><br><span class="line">										 UBInt8(<span class="string">"leftovers"</span>),</span><br><span class="line">									 ),</span><br><span class="line">									 )</span><br></pre></td></tr></table></figure></p>
+<p>##4.实战仿写<br>现在我们根据<code>Xbee</code>通信的数据包格式来仿照着写出一个解析<code>Xbee</code>的<code>Constructor</code><br>首先我们需要知道<code>xbee</code>的<code>7E格式</code>通讯协议<br><strong>Xbee-&gt;PC:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">位置</th>
+<th style="text-align:center">类型</th>
+<th style="text-align:center">名称</th>
+<th style="text-align:center">长度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">包头</td>
+<td style="text-align:center">header</td>
+<td style="text-align:center">8bit</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">包长度</td>
+<td style="text-align:center">plen</td>
+<td style="text-align:center">16bit</td>
+</tr>
+<tr>
+<td style="text-align:center">2</td>
+<td style="text-align:center">传输方向</td>
+<td style="text-align:center">dir</td>
+<td style="text-align:center">8bit</td>
+</tr>
+<tr>
+<td style="text-align:center">3</td>
+<td style="text-align:center">节点ID</td>
+<td style="text-align:center">plen</td>
+<td style="text-align:center">64bit</td>
+</tr>
+<tr>
+<td style="text-align:center">4</td>
+<td style="text-align:center">功能号</td>
+<td style="text-align:center">funcid</td>
+<td style="text-align:center">16bit</td>
+</tr>
+<tr>
+<td style="text-align:center">6~N-2</td>
+<td style="text-align:center">数据块数组</td>
+<td style="text-align:center">data</td>
+<td style="text-align:center">64bit*N</td>
+</tr>
+<tr>
+<td style="text-align:center">N-1</td>
+<td style="text-align:center">包校验</td>
+<td style="text-align:center">crc</td>
+<td style="text-align:center">8bit</td>
+</tr>
+</tbody>
+</table>
+<p>根据这个我们再来写出一个xbee的解析（不唯一）<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">XbeeConstructor</span><span class="params">(object)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="comment"># 接收数据的数据格式定义</span></span><br><span class="line">		self.constructFrame = Struct(<span class="string">"parser"</span>,</span><br><span class="line">				OptionalGreedyRange(</span><br><span class="line">					Struct(<span class="string">"packets"</span>,</span><br><span class="line">						UBInt8(<span class="string">"header"</span>),</span><br><span class="line">						UBInt16(<span class="string">"plen"</span>),</span><br><span class="line">						UBInt8(<span class="string">"dir"</span>),</span><br><span class="line">						UBInt64(<span class="string">"nodeid"</span>),</span><br><span class="line">						UBInt16(<span class="string">"funcid"</span>),</span><br><span class="line">						Array(<span class="keyword">lambda</span> ctx: (ctx.plen - <span class="number">1</span> - <span class="number">8</span> - <span class="number">2</span>) / <span class="number">8</span>,</span><br><span class="line">							Struct(<span class="string">"block"</span>,</span><br><span class="line">								Array(<span class="number">2</span>, UBInt8(<span class="string">"type"</span>)),</span><br><span class="line">								Array(<span class="number">2</span>, UBInt8(<span class="string">"unit"</span>)),</span><br><span class="line">								Array(<span class="number">4</span>, UBInt8(<span class="string">"value"</span>)),</span><br><span class="line">							      )</span><br><span class="line">						     ),</span><br><span class="line">						UBInt8(<span class="string">"crc"</span>),</span><br><span class="line">					      ),</span><br><span class="line">					),</span><br><span class="line">				OptionalGreedyRange(</span><br><span class="line">					UBInt8(<span class="string">"leftovers"</span>),</span><br><span class="line">					),</span><br><span class="line">				)</span><br></pre></td></tr></table></figure></p>
+<p>再来看一组要生成的报文，我们这次通过build方法来生成需要发送的指令（实际上都是要写出数据的<code>struct</code>的），这个调用build()方法来生成一个我们想要的数据<br><strong>PC-&gt;Xbee:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">位置</th>
+<th style="text-align:center">名称</th>
+<th style="text-align:center">长度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">header</td>
+<td style="text-align:center">8bit</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">length</td>
+<td style="text-align:center">16bit</td>
+</tr>
+<tr>
+<td style="text-align:center">2</td>
+<td style="text-align:center">type</td>
+<td style="text-align:center">8bit</td>
+</tr>
+<tr>
+<td style="text-align:center">3</td>
+<td style="text-align:center">id</td>
+<td style="text-align:center">8bit</td>
+</tr>
+<tr>
+<td style="text-align:center">4</td>
+<td style="text-align:center">64address</td>
+<td style="text-align:center">64bit</td>
+</tr>
+<tr>
+<td style="text-align:center">5</td>
+<td style="text-align:center">16address</td>
+<td style="text-align:center">16bit</td>
+</tr>
+<tr>
+<td style="text-align:center">6</td>
+<td style="text-align:center">broadcast</td>
+<td style="text-align:center">8bit</td>
+</tr>
+<tr>
+<td style="text-align:center">7</td>
+<td style="text-align:center">options</td>
+<td style="text-align:center">8bit</td>
+</tr>
+<tr>
+<td style="text-align:center">8~N-2</td>
+<td style="text-align:center">data</td>
+<td style="text-align:center">8bit*N</td>
+</tr>
+<tr>
+<td style="text-align:center">N-1</td>
+<td style="text-align:center">checksum</td>
+<td style="text-align:center">8bit</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这之中最难的其实不是结构该如何写，而是怎么让它在执行build方法的时候把校验值也动态生成出来</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">XbeePacketBuilder</span><span class="params">(object)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="comment"># 接收数据的数据格式定义</span></span><br><span class="line">		self.constructFrame = Struct(<span class="string">"parser"</span>,</span><br><span class="line">				OptionalGreedyRange(</span><br><span class="line">					Struct(<span class="string">"packets"</span>,</span><br><span class="line">						UBInt8(<span class="string">"header"</span>),</span><br><span class="line">						UBInt16(<span class="string">"length"</span>),</span><br><span class="line">						UBInt8(<span class="string">"frameType"</span>),</span><br><span class="line">						UBInt8(<span class="string">"id"</span>),</span><br><span class="line">						UBInt64(<span class="string">"64address"</span>),</span><br><span class="line">						UBInt16(<span class="string">"16address"</span>),</span><br><span class="line">						UBInt8(<span class="string">"broadcast"</span>),</span><br><span class="line">						UBInt8(<span class="string">"options"</span>),</span><br><span class="line">						Array(<span class="keyword">lambda</span> ctx: (ctx.length- <span class="number">1</span> - <span class="number">8</span> - <span class="number">2</span>) / <span class="number">8</span>,</span><br><span class="line">							Embed(Struct(<span class="string">"block"</span>,</span><br><span class="line">									Array(<span class="number">2</span>, UBInt8(<span class="string">"type"</span>)),</span><br><span class="line">									Array(<span class="number">2</span>, UBInt8(<span class="string">"unit"</span>)),</span><br><span class="line">									Array(<span class="number">4</span>, UBInt8(<span class="string">"value"</span>)),</span><br><span class="line">								    ))</span><br><span class="line">						     ),</span><br><span class="line">						UBInt8(<span class="string">"checksum"</span>),</span><br><span class="line">					      ),</span><br><span class="line">					),</span><br><span class="line">				OptionalGreedyRange(</span><br><span class="line">						UBInt8(<span class="string">"leftovers"</span>),</span><br><span class="line">						),</span><br><span class="line">				)</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
