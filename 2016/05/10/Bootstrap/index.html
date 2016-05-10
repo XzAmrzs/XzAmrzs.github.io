@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>几个漂亮的Bootstrap插件（已经视觉疲劳） | XzAmrzs&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前阵子自己用jsp开发个人Blog，思来想去还是Bootstrap用着顺手了，顺便也整理了一些网上有关Bootstrap的一些漂亮插件分享给大家。使用方法大同小异，下载下来然后指定标签的class属性即可.eg:1&amp;lt;input type=&quot;textarea&quot; class=&quot;wysihtml5&quot;/&amp;gt;
+1. 可视化编辑器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="几个漂亮的Bootstrap插件（已经视觉疲劳）">
+<meta property="og:url" content="http://yoursite.com/2016/05/10/Bootstrap/index.html">
+<meta property="og:site_name" content="XzAmrzs's Blog">
+<meta property="og:description" content="前阵子自己用jsp开发个人Blog，思来想去还是Bootstrap用着顺手了，顺便也整理了一些网上有关Bootstrap的一些漂亮插件分享给大家。使用方法大同小异，下载下来然后指定标签的class属性即可.eg:1&amp;lt;input type=&quot;textarea&quot; class=&quot;wysihtml5&quot;/&amp;gt;
+1. 可视化编辑器">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-d4e7b644aeb49330.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-27845387ee81b99d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-f2ac69ded508650e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-cf73cf4f99156295.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-7cd2441c5a609036.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-b976d07b137c61f4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-1bec32649ea6a15a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-e5dd92a6bb67c123.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-411613694aa83fd0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-7ddfe9f3120ec06b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://camo.githubusercontent.com/187b76c156ed53e1e7c29266ee19b164be192ffe/68747470733a2f2f6c68332e676f6f676c6575736572636f6e74656e742e636f6d2f2d334669456d635f6f6b63342f5642775f64324c42414a492f4141414141414141414c382f4b62566a355839447573302f773539362d683435342d6e6f2f46696c65496e7075742e6a7067">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-8e221d4026cf7bf5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-b2c59e504440d111.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-b388c595a6298133.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-e6f3d7d6ef8ba68a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-18466845221c5ce3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-635e79aa5b27756f.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/311496-e5f096b8eeebb5a5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2016-05-10T01:02:02.020Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="几个漂亮的Bootstrap插件（已经视觉疲劳）">
+<meta name="twitter:description" content="前阵子自己用jsp开发个人Blog，思来想去还是Bootstrap用着顺手了，顺便也整理了一些网上有关Bootstrap的一些漂亮插件分享给大家。使用方法大同小异，下载下来然后指定标签的class属性即可.eg:1&amp;lt;input type=&quot;textarea&quot; class=&quot;wysihtml5&quot;/&amp;gt;
+1. 可视化编辑器">
+  
+    <link rel="alternative" href="/atom.xml" title="XzAmrzs&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="http://7xox9y.com1.z0.glb.clouddn.com/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="http://7xox9y.com1.z0.glb.clouddn.com/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">XzAmrzs</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">路很长、还要走</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						<div class="icon-wrap icon-link hide" data-idx="2">
+							<div class="loopback_l"></div>
+							<div class="loopback_r"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						<li>友情链接</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+							<li><a href="/tags/随笔">随笔</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/XzAmrzs" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/u/3672449634" title="weibo">weibo</a>
+					        
+								<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/dong-huang-amrzs" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/Bootstrap/" style="font-size: 10px;">Bootstrap</a> <a href="/tags/RFID/" style="font-size: 10px;">RFID</a> <a href="/tags/Twisted/" style="font-size: 10px;">Twisted</a> <a href="/tags/construct/" style="font-size: 10px;">construct</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.jianshu.com/users/d557aa88529a/latest_articles">我的简书博客</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">我的名字是&#39;邢志鹏&#39;，目前坐标河南郑州，就读于河南工业大学，大三在读软件狗,主攻python开发:爬虫、建站、大数据</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">XzAmrzs</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="http://7xox9y.com1.z0.glb.clouddn.com/avatar.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">XzAmrzs</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">路很长、还要走</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+					<li><a href="/tags/随笔">随笔</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/XzAmrzs" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/3672449634" title="weibo">weibo</a>
+			        
+						<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/dong-huang-amrzs" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-Bootstrap" class="article article-type-post" itemscope
+         itemprop="blogPost">
+    
+    <div class="article-meta">
+        <a href="/2016/05/10/Bootstrap/" class="article-date">
+  	<time datetime="2016-05-10T01:02:02.022Z" itemprop="datePublished">2016-05-10</time>
+</a>
+    </div>
+    
+    <div class="article-inner">
+        
+        <input type="hidden" class="isFancy"/>
+        
+        
+        <header class="article-header">
+            
+  
+    <h1 class="article-title" itemprop="name">
+      几个漂亮的Bootstrap插件（已经视觉疲劳）
+    </h1>
+  
+
+        </header>
+        
+        <div class="article-info article-info-post">
+            
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Bootstrap/">Bootstrap</a></li></ul>
+	</div>
+
+            
+
+            <div class="clearfix"></div>
+        </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+            <!-- Table of Contents -->
+            
+            <p>前阵子自己用<code>jsp</code>开发个人Blog，思来想去还是Bootstrap用着顺手了，顺便也整理了一些网上有关Bootstrap的一些漂亮插件分享给大家。<br>使用方法大同小异，下载下来然后指定标签的<code>class</code>属性即可.<br>eg:<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;input <span class="class"><span class="keyword">type</span>=</span><span class="string">"textarea"</span> <span class="class"><span class="keyword">class</span>=</span><span class="string">"wysihtml5"</span>/&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="1-_可视化编辑器">1. 可视化编辑器</h2><a id="more"></a>
+<ol>
+<li><a href="http://jhollingworth.github.io/bootstrap-wysihtml5/" target="_blank" rel="external"><strong>bootstrap-wysihtml5</strong></a><br><img src="http://upload-images.jianshu.io/upload_images/311496-d4e7b644aeb49330.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="A Javascript plugin that makes it easy to create simple WYSIWYG editors"><br>2.<a href="http://hackerwins.github.io/summernote/" target="_blank" rel="external"><strong>Summernote</strong></a><br><img src="http://upload-images.jianshu.io/upload_images/311496-27845387ee81b99d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="A simple WYSIWYG editor for Bootstrap"></li>
+</ol>
+<p>##2. 日期选择器</p>
+<ol>
+<li><a href="http://www.eyecon.ro/bootstrap-datepicker/" target="_blank" rel="external"><strong>Datepicker</strong></a><br><img src="http://upload-images.jianshu.io/upload_images/311496-f2ac69ded508650e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="A plugin for adding a datepicker field to any element"></li>
+<li><a href="http://weareoutman.github.io/clockpicker/" target="_blank" rel="external"><strong>ClockPicker</strong></a><br><img src="http://upload-images.jianshu.io/upload_images/311496-cf73cf4f99156295.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="A unique clock-style timepicker for Bootstrap"></li>
+</ol>
+<h2 id="3-数据分析生成器">3.数据分析生成器</h2><ol>
+<li><a href="http://www.dangrossman.info/2012/08/20/a-date-range-picker-for-twitter-bootstrap/" target="_blank" rel="external"><strong>Date Range Picker</strong></a><br><img src="http://upload-images.jianshu.io/upload_images/311496-7cd2441c5a609036.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="This date range picker component creates a drop-down from which you can select a range of dates Extending Bootstrap"></li>
+</ol>
+<h2 id="4-对话框提示框">4.对话框提示框</h2><ol>
+<li><a href="http://bootboxjs.com/" target="_blank" rel="external"><strong>Bootbox.js</strong></a><br><img src="http://upload-images.jianshu.io/upload_images/311496-b976d07b137c61f4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="small JS library that allows you to create programmatic dialog boxes using Bootstraps modals"></li>
+</ol>
+<h2 id="5-文件上传插件">5.文件上传插件</h2><ol>
+<li><a href="http://blueimp.github.io/jQuery-File-Upload/" target="_blank" rel="external"><strong>jQuery File Upload</strong></a><br><img src="http://upload-images.jianshu.io/upload_images/311496-1bec32649ea6a15a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="A file upload widget which features multiple file selection, drag &amp; drop, progress bars"></li>
+</ol>
+<h2 id="6-表单验证插件">6.表单验证插件</h2><ol>
+<li><a href="http://bootstrapvalidator.com/" target="_blank" rel="external"><strong>BootstrapValidator</strong></a><br><img src="http://upload-images.jianshu.io/upload_images/311496-e5dd92a6bb67c123.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=" [API](http://bv.doc.javake.cn/api/)  A jQuery plugin for vaildating forms within Bootstrap"></li>
+<li><a href="http://reactiveraven.github.io/jqBootstrapValidation/" target="_blank" rel="external"><strong>jqBootstrapValidation</strong></a><br><img src="http://upload-images.jianshu.io/upload_images/311496-411613694aa83fd0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="jqBootstrapValidation&lt;/strong&gt;&lt;/a&gt; – Another jQuery validation framework for Bootstrap”/&gt;&lt;/p&gt;&lt;br /&gt;&lt;p&gt;&lt;a target="></li>
+</ol>
+<h2 id="7-相册插件">7.相册插件</h2><ol>
+<li><a href="http://blueimp.github.io/Bootstrap-Image-Gallery/" target="_blank" rel="external"><strong>Image Gallery</strong></a><img src="http://upload-images.jianshu.io/upload_images/311496-7ddfe9f3120ec06b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="plugin shows images and videos in the modal dialog of the Bootstrap"><br>2.<a href="http://plugins.krajee.com/file-input" target="_blank" rel="external"><strong> Bootstrap File Input</strong></a><br><a href="https://camo.githubusercontent.com/187b76c156ed53e1e7c29266ee19b164be192ffe/68747470733a2f2f6c68332e676f6f676c6575736572636f6e74656e742e636f6d2f2d334669456d635f6f6b63342f5642775f64324c42414a492f4141414141414141414c382f4b62566a355839447573302f773539362d683435342d6e6f2f46696c65496e7075742e6a7067" target="_blank" rel="external"><img src="https://camo.githubusercontent.com/187b76c156ed53e1e7c29266ee19b164be192ffe/68747470733a2f2f6c68332e676f6f676c6575736572636f6e74656e742e636f6d2f2d334669456d635f6f6b63342f5642775f64324c42414a492f4141414141414141414c382f4b62566a355839447573302f773539362d683435342d6e6f2f46696c65496e7075742e6a7067" alt="File Input Screenshot"></a></li>
+</ol>
+<h2 id="8-文字编辑">8.文字编辑</h2><ol>
+<li><a href="http://vitalets.github.io/x-editable/" target="_blank" rel="external"><strong>X-editable</strong></a><img src="http://upload-images.jianshu.io/upload_images/311496-8e221d4026cf7bf5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="A library that allows you to create editable elements on your Bootstrap page"></li>
+<li><a href="http://toopay.github.io/bootstrap-markdown/" target="_blank" rel="external"><strong>Bootstrap Markdown</strong></a><br><img src="http://upload-images.jianshu.io/upload_images/311496-b2c59e504440d111.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="A plugin for enabling Markdown editing in Bootstrap"></li>
+</ol>
+<h2 id="9-标签">9.标签</h2><ol>
+<li><a href="https://github.com/maxwells/bootstrap-tags" target="_blank" rel="external"><strong>Bootstrap Tags</strong></a><img src="http://upload-images.jianshu.io/upload_images/311496-b388c595a6298133.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="jQuery plugin for adding tagging functionality Bootstrap"></li>
+<li><a href="http://sliptree.github.io/bootstrap-tokenfield/" target="_blank" rel="external"><strong>Tokenfield</strong></a><img src="http://upload-images.jianshu.io/upload_images/311496-e6f3d7d6ef8ba68a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="An advanced tagging jQuery plugin for Bootstrap"></li>
+</ol>
+<h2 id="10-Website_Tour(新手指引！)">10.Website Tour(新手指引！)</h2><ol>
+<li><a href="http://bootstraptour.com/" target="_blank" rel="external"><strong>Bootstrap Tour</strong></a><img src="http://upload-images.jianshu.io/upload_images/311496-18466845221c5ce3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="A quick and easy way to build your product tours with Bootstrap Popovers"></li>
+<li><a href="http://clu3.github.io/bootstro.js/" target="_blank" rel="external">Bootstro.js</a><br><img src="http://upload-images.jianshu.io/upload_images/311496-635e79aa5b27756f.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Bootstro-js"></li>
+</ol>
+<h2 id="11-按钮">11.按钮</h2><ol>
+<li>社交媒体按钮<br><a href="http://lipis.github.io/bootstrap-social/" target="_blank" rel="external"><strong>Social Buttons for Bootstrap</strong></a><br><img src="http://upload-images.jianshu.io/upload_images/311496-e5f096b8eeebb5a5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="A pure CSS social sign-in button library for bootstrap"></li>
+</ol>
+<p>先就这么多了，以后遇到更好的再补充。</p>
+
+            
+        </div>
+        
+    </div>
+    
+    
+<nav id="article-nav">
+  
+    <a href="/2016/05/10/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          简书博客搬迁计划
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/05/09/py-virtualenv/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">使用virtualenvwrapper隔离python开发环境</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+    
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="Bootstrap" data-title="几个漂亮的Bootstrap插件（已经视觉疲劳）" data-url="http://yoursite.com/2016/05/10/Bootstrap/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"xzamrzs"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 XzAmrzs
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<div id="totop" style="position:fixed;bottom:150px;right:50px;cursor: pointer;">
+<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+</div>
+<script src="/js/totop.js"></script>
+  </div>
+</body>
+</html>
