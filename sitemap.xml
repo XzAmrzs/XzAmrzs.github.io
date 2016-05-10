@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>http://yoursite.com/2016/05/10/py-virtualenv/</loc>
+    
+    <lastmod>2016-05-10T02:05:38.839Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2016/05/10/hello-world/</loc>
+    
+    <lastmod>2016-05-10T01:02:49.802Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2016/05/10/Bootstrap/</loc>
+    
+    <lastmod>2016-05-10T01:02:02.020Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2016/05/09/RFID-Twisted/</loc>
+    
+    <lastmod>2016-05-09T13:54:26.887Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2016/05/09/py-decorator/</loc>
+    
+    <lastmod>2016-05-09T13:48:36.358Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2016/05/09/py-construct/</loc>
+    
+    <lastmod>2016-05-09T13:43:57.078Z</lastmod>
+    
+  </url>
+  
+</urlset>
