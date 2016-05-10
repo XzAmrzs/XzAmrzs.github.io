@@ -5,23 +5,20 @@
   
   <title>使用Python-Construct解析数据和生成协议 | XzAmrzs&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)
-construct的作用
-&amp;#160; &amp;#160; &amp;#160; &amp;#160;Construct">
+  <meta name="description" content="本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循署名-非商业用途-保持一致的创作共用协议.
+&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下c">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用Python-Construct解析数据和生成协议">
-<meta property="og:url" content="http://happyxzp.com/2016/05/09/py-construct/index.html">
+<meta property="og:url" content="http://happyxzp.com/2016/05/10/py-construct/index.html">
 <meta property="og:site_name" content="XzAmrzs's Blog">
-<meta property="og:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)
-construct的作用
-&amp;#160; &amp;#160; &amp;#160; &amp;#160;Construct">
+<meta property="og:description" content="本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循署名-非商业用途-保持一致的创作共用协议.
+&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下c">
 <meta property="og:image" content="http://7xox9y.com1.z0.glb.clouddn.com/RFIDprotocol.jpg">
-<meta property="og:updated_time" content="2016-05-09T13:43:57.078Z">
+<meta property="og:updated_time" content="2016-05-10T04:29:38.606Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Python-Construct解析数据和生成协议">
-<meta name="twitter:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)
-construct的作用
-&amp;#160; &amp;#160; &amp;#160; &amp;#160;Construct">
+<meta name="twitter:description" content="本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循署名-非商业用途-保持一致的创作共用协议.
+&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在Python中解析数据包有一个内置的Struct库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下c">
   
     <link rel="alternative" href="/atom.xml" title="XzAmrzs&#39;s Blog" type="application/atom+xml">
   
@@ -124,7 +121,7 @@ construct的作用
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/Bootstrap/" style="font-size: 10px;">Bootstrap</a> <a href="/tags/RFID/" style="font-size: 10px;">RFID</a> <a href="/tags/Twisted/" style="font-size: 10px;">Twisted</a> <a href="/tags/construct/" style="font-size: 10px;">construct</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/Bootstrap/" style="font-size: 10px;">Bootstrap</a> <a href="/tags/RFID/" style="font-size: 10px;">RFID</a> <a href="/tags/Twisted/" style="font-size: 15px;">Twisted</a> <a href="/tags/construct/" style="font-size: 10px;">construct</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -208,8 +205,8 @@ construct的作用
          itemprop="blogPost">
     
     <div class="article-meta">
-        <a href="/2016/05/09/py-construct/" class="article-date">
-  	<time datetime="2016-05-09T13:43:57.080Z" itemprop="datePublished">2016-05-09</time>
+        <a href="/2016/05/10/py-construct/" class="article-date">
+  	<time datetime="2016-05-10T04:29:38.607Z" itemprop="datePublished">2016-05-10</time>
 </a>
     </div>
     
@@ -249,7 +246,8 @@ construct的作用
                 <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#construct的作用"><span class="toc-number">1.</span> <span class="toc-text">construct的作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用法实例"><span class="toc-number">2.</span> <span class="toc-text">用法实例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用法讲解"><span class="toc-number">3.</span> <span class="toc-text">用法讲解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Fields"><span class="toc-number">3.1.</span> <span class="toc-text">Fields</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Structs"><span class="toc-number">3.2.</span> <span class="toc-text">Structs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Containers"><span class="toc-number">3.3.</span> <span class="toc-text">Containers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Building"><span class="toc-number">3.4.</span> <span class="toc-text">Building</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#嵌套使用"><span class="toc-number">3.5.</span> <span class="toc-text">嵌套使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Embedding"><span class="toc-number">3.6.</span> <span class="toc-text">Embedding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Sequences"><span class="toc-number">3.7.</span> <span class="toc-text">Sequences</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Repeaters"><span class="toc-number">3.8.</span> <span class="toc-text">Repeaters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Enums"><span class="toc-number">3.9.</span> <span class="toc-text">Enums</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ctx"><span class="toc-number">3.10.</span> <span class="toc-text">ctx</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Switch"><span class="toc-number">3.11.</span> <span class="toc-text">Switch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他的用法"><span class="toc-number">3.12.</span> <span class="toc-text">其他的用法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实战仿写"><span class="toc-number">4.</span> <span class="toc-text">实战仿写</span></a></li></ol>
             </div>
             
-            <p>&#160; &#160; &#160; &#160;直接切入正题，我们知道在<code>Python</code>中解析数据包有一个内置的<code>Struct</code>库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)</p>
+            <p>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh" target="_blank" rel="external">署名-非商业用途-保持一致</a>的创作共用协议.</p>
+<p>&#160; &#160; &#160; &#160;直接切入正题，我们知道在<code>Python</code>中解析数据包有一个内置的<code>Struct</code>库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)</p>
 <h2 id="construct的作用">construct的作用</h2><blockquote>
 <p>&#160; &#160; &#160; &#160;Construct is a powerful declarative parser (and builder) for binary data.</p>
 <p>&#160; &#160; &#160; &#160;Instead of writing imperative code to parse a piece of data, you declaratively define a data structure that describes your data. As this data structure is not code, you can use it in one direction to parse data into Pythonic objects, and in the other direction, convert (“build”) objects into binary data.</p>
@@ -456,7 +454,7 @@ construct的作用
     
 <nav id="article-nav">
   
-    <a href="/2016/05/09/py-decorator/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2016/05/10/py-decorator/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
@@ -465,6 +463,11 @@ construct的作用
       </div>
     </a>
   
+  
+    <a href="/2016/05/10/Bootstrap/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">几个漂亮的Bootstrap插件（已经视觉疲劳）</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
   
 </nav>
 
@@ -490,7 +493,7 @@ construct的作用
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="py-construct" data-title="使用Python-Construct解析数据和生成协议" data-url="http://happyxzp.com/2016/05/09/py-construct/"></div>
+	<div class="ds-thread" data-thread-key="py-construct" data-title="使用Python-Construct解析数据和生成协议" data-url="http://happyxzp.com/2016/05/10/py-construct/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">

@@ -3,21 +3,27 @@
 <head>
   <meta charset="utf-8">
   
-  <title>python中装饰器的深度剖析! | XzAmrzs&#39;s Blog</title>
+  <title>Twisted解析RFID数据传输整理 | XzAmrzs&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="自定义的修饰器.一个不带参数的装饰器:123@decoratordef func():    pass
-上面这段代码就等于下面的实现:">
+  <meta name="description" content="本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循署名-非商业用途-保持一致的创作共用协议.
+一. 发送相关:
+self.transport.write()函数只能发送字符串类型的参数!!!
+RFID只接收字节流的指令码!!!">
 <meta property="og:type" content="article">
-<meta property="og:title" content="python中装饰器的深度剖析!">
-<meta property="og:url" content="http://happyxzp.com/2016/05/09/py-decorator/index.html">
+<meta property="og:title" content="Twisted解析RFID数据传输整理">
+<meta property="og:url" content="http://happyxzp.com/2016/05/10/RFID-Twisted/index.html">
 <meta property="og:site_name" content="XzAmrzs's Blog">
-<meta property="og:description" content="自定义的修饰器.一个不带参数的装饰器:123@decoratordef func():    pass
-上面这段代码就等于下面的实现:">
-<meta property="og:updated_time" content="2016-05-09T13:48:36.358Z">
+<meta property="og:description" content="本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循署名-非商业用途-保持一致的创作共用协议.
+一. 发送相关:
+self.transport.write()函数只能发送字符串类型的参数!!!
+RFID只接收字节流的指令码!!!">
+<meta property="og:updated_time" content="2016-05-10T04:29:51.663Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="python中装饰器的深度剖析!">
-<meta name="twitter:description" content="自定义的修饰器.一个不带参数的装饰器:123@decoratordef func():    pass
-上面这段代码就等于下面的实现:">
+<meta name="twitter:title" content="Twisted解析RFID数据传输整理">
+<meta name="twitter:description" content="本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循署名-非商业用途-保持一致的创作共用协议.
+一. 发送相关:
+self.transport.write()函数只能发送字符串类型的参数!!!
+RFID只接收字节流的指令码!!!">
   
     <link rel="alternative" href="/atom.xml" title="XzAmrzs&#39;s Blog" type="application/atom+xml">
   
@@ -120,7 +126,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/Bootstrap/" style="font-size: 10px;">Bootstrap</a> <a href="/tags/RFID/" style="font-size: 10px;">RFID</a> <a href="/tags/Twisted/" style="font-size: 10px;">Twisted</a> <a href="/tags/construct/" style="font-size: 10px;">construct</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/Bootstrap/" style="font-size: 10px;">Bootstrap</a> <a href="/tags/RFID/" style="font-size: 10px;">RFID</a> <a href="/tags/Twisted/" style="font-size: 15px;">Twisted</a> <a href="/tags/construct/" style="font-size: 10px;">construct</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -200,12 +206,12 @@
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-py-decorator" class="article article-type-post" itemscope
+      <div class="body-wrap"><article id="post-RFID-Twisted" class="article article-type-post" itemscope
          itemprop="blogPost">
     
     <div class="article-meta">
-        <a href="/2016/05/09/py-decorator/" class="article-date">
-  	<time datetime="2016-05-09T13:48:36.360Z" itemprop="datePublished">2016-05-09</time>
+        <a href="/2016/05/10/RFID-Twisted/" class="article-date">
+  	<time datetime="2016-05-10T04:29:51.664Z" itemprop="datePublished">2016-05-10</time>
 </a>
     </div>
     
@@ -218,7 +224,7 @@
             
   
     <h1 class="article-title" itemprop="name">
-      python中装饰器的深度剖析!
+      Twisted解析RFID数据传输整理
     </h1>
   
 
@@ -227,7 +233,7 @@
         <div class="article-info article-info-post">
             
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RFID/">RFID</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Twisted/">Twisted</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
 	</div>
 
             
@@ -242,21 +248,51 @@
             
             <div id="toc" class="toc-article">
                 <strong class="toc-title">文章目录</strong>
-                
+                <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-_发送相关:"><span class="toc-number">1.</span> <span class="toc-text">一. 发送相关:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#所以:"><span class="toc-number">1.1.</span> <span class="toc-text">所以:</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-_接收相关"><span class="toc-number"></span> <span class="toc-text">二. 接收相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#所以:-1"><span class="toc-number">0.1.</span> <span class="toc-text">所以:</span></a></li></ol></li></ol>
             </div>
             
-            <p>自定义的修饰器.<br>一个不带参数的装饰器:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="decorator">@decorator</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure></p>
-<p>上面这段代码就等于下面的实现:<br><a id="more"></a></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fun = decorator(fun)</span><br></pre></td></tr></table></figure>
-<p>而带有参数的装饰器:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="decorator">@decorator('Amrzs')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span><span class="params">()</span>:</span></span><br><span class="line">     <span class="keyword">pass</span></span><br></pre></td></tr></table></figure></p>
-<p>这段代码就等于下面的实现:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fun = decorator(<span class="string">'Amrzs'</span>)(func)</span><br></pre></td></tr></table></figure></p>
-<p>但是这个操作因为每次实现装饰器都要这样实现一遍的话太麻烦,所以python内置的<code>@</code>语法给我们实现了这些功能.</p>
-<p>又由于被<code>decorator</code>装饰之后的函数，它们的<code>__name__</code>已经从原来的<code>now</code>变成了装饰器中的函数签名, 所以，需要把原始函数的<code>__name__</code>等属性复制到<code>wrapper()</code>函数中，否则，有些依赖函数签名的代码执行就会出错。</p>
-<p>即需要编写<code>wrapper.__name__ = func.__name__</code>这样的代码，但是Python内置的<code>functools.wraps</code>函数已经帮我们做了这个事情. 所以，一个完整的<code>decorator</code>的写法如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> functools</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">log</span><span class="params">(func)</span>:</span></span><br><span class="line"><span class="decorator">    @functools.wraps(func) </span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(*args, **kw)</span>:</span> </span><br><span class="line">        print(<span class="string">'call %s():'</span> % func.__name__) </span><br><span class="line">        <span class="keyword">return</span> func(*args, **kw)</span><br><span class="line"><span class="keyword">return</span> wrapper</span><br></pre></td></tr></table></figure></p>
-<p>或者说带参数的:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> functools</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">log</span><span class="params">(text)</span>:</span> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decorator</span><span class="params">(func)</span>:</span></span><br><span class="line"><span class="decorator">        @functools.wraps(func)</span></span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(*args, **kw)</span>:</span></span><br><span class="line">             print(<span class="string">'%s %s():'</span> % (text, func.__name__))</span><br><span class="line">             <span class="keyword">return</span> func(*args, **kw) </span><br><span class="line">    <span class="keyword">return</span> wrapper</span><br><span class="line"><span class="keyword">return</span> decorator</span><br></pre></td></tr></table></figure></p>
-<p>而有了上面的知识,再基于这个装饰器的<code>@</code>原理就很容易实现一个更加具有特定功能的装饰器,比如我们现在有一个<code>@permission_required(permission)</code>这样的装饰器.这个装饰器的功能是根据<code>permission</code>参数来执行相应权限的操作.<br>现在我们来实现一个只允许管理员操作的装饰器:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">admin_required</span><span class="params">(func)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> permission_required(Permission.ADMINISTER)(func)</span><br></pre></td></tr></table></figure></p>
-<p>原理很简单,其实就是内定了<code>permission_required()</code>函数参数的值,默认为管理员权限,又因为这种结构符合python的<code>@</code>语法糖,所以直接就可以用<code>@admin_required</code>这样的方式来使用这个装饰器!</p>
-<p>哈哈!</p>
+            <p>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh" target="_blank" rel="external">署名-非商业用途-保持一致</a>的创作共用协议.</p>
+<h2 id="一-_发送相关:">一. 发送相关:</h2><ol>
+<li><code>self.transport.write()</code>函数只能发送<strong>字符串</strong>类型的参数!!!</li>
+<li><p><code>RFID</code>只接收字节流的指令码!!!</p>
+<a id="more"></a>
+<h3 id="所以:">所以:</h3><p>(1). 可直接发送字节流的字符串表示</p>
+<blockquote>
+<p>data = ‘\xff\xff\xf1\x07\x06\xf1’ <code>#类型是str,但打印出来是无法识别的字节码</code><br>self.transport.write(data)</p>
+</blockquote>
+<p>(2). 给参数赋值字符串指令码(此时并不是字节流所以要进行下一步)</p>
+<blockquote>
+<p>dataStr =’FF FF F1 06 06 F1’</p>
+</blockquote>
+<p>然后用<code>bytearray.fromhex(dataStr)</code>将<strong>字符串转换成字节流</strong></p>
+<blockquote>
+<p>byteData=bytearray.fromhex(dataStr)</p>
+</blockquote>
+<p>最后将<strong>字节流转换成字符串</strong>进行发送</p>
+<blockquote>
+<p>self.transport.write(str(bytedata))</p>
+</blockquote>
+</li>
+</ol>
+<h1 id="二-_接收相关">二. 接收相关</h1><ol>
+<li>从RFID接收过来的数据是字节流的字符串表示(即<code>字节串</code>,字节串其实就是字节流).类型是<code>str</code>.<code>print</code>出来是无法识别的字节码同<code>一中的(1)</code></li>
+<li>实践证明<code>datareceived</code>对<code>RFID</code>传过来的数据是<strong>一个字节一个字节</strong>的进行接收的,这个函数宏观上只执行了一次,但是实际上有几个字节执行几次,一直到接受完毕为止.</li>
+<li><p>对字节流数据进行解析(解包)的<code>construct</code>函数,<strong>只接收字节串(字节流)参数</strong>所以需要再转换成字节串才能进行解析</p>
+<h3 id="所以:-1">所以:</h3><p>(1).先使用 <code>binascii.b2a_hex(data)</code>或者<code>hexlify(data)</code>.由函数意思<strong>binary to ascii</strong>.作用是返回的二进制数据的十六进制表示.<strong>每一个字节的数据转换成相应的2位十六进制表示.</strong>因此产生的字串是源数据两倍长度。<code>a2b_hex</code>和<code>unhexlify</code>则执行反向操作(所得仍然是字符串类型)</p>
+<blockquote>
+<p>self.data_list += binascii.b2a_hex(data) <code>#累加字符串,注意,字节串是不能直接进行加法的.</code></p>
+</blockquote>
+<p><strong>若是只进行串口的调试其实到这一步就算通了</strong><br>(2). 对(1)中转化成的字符串再次转化成字节流</p>
+<blockquote>
+<p>byteData = bytearray.fromhex(self.data_list) </p>
+</blockquote>
+<p>(3). 对字节流中的数据进行解包处理.</p>
+<blockquote>
+<p>pkgs, leftovers = self.rfid.parse_pkgs(byteData)  <code># 解析字节流转化为可识别的指令码存在pkgs(一个列表),剩下的存在leftovers</code><br>if len(pkgs) != 0 and len(leftovers) == 0:  <code>对数据包的正确性进行判断</code></p>
+</blockquote>
+<p>(4). 处理数据<br>调用handlDatas函数.从返回的列表中取有用的数据</p>
+</li>
+</ol>
 
             
         </div>
@@ -266,18 +302,18 @@
     
 <nav id="article-nav">
   
-    <a href="/2016/05/09/RFID-Twisted/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2016/05/10/Twisted/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          Twisted解析RFID数据传输整理
+          Twisted实例教程(一)
         
       </div>
     </a>
   
   
-    <a href="/2016/05/09/py-construct/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">使用Python-Construct解析数据和生成协议</div>
+    <a href="/2016/05/10/py-virtualenv/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">使用virtualenvwrapper隔离python开发环境</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -305,7 +341,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="py-decorator" data-title="python中装饰器的深度剖析!" data-url="http://happyxzp.com/2016/05/09/py-decorator/"></div>
+	<div class="ds-thread" data-thread-key="RFID-Twisted" data-title="Twisted解析RFID数据传输整理" data-url="http://happyxzp.com/2016/05/10/RFID-Twisted/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
