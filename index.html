@@ -198,12 +198,12 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-Twisted" class="article article-type-post" itemscope
+    <article id="post-Bootstrap" class="article article-type-post" itemscope
          itemprop="blogPost">
     
     <div class="article-meta">
-        <a href="/2016/05/10/Twisted/" class="article-date">
-  	<time datetime="2016-05-10T04:29:57.037Z" itemprop="datePublished">2016-05-10</time>
+        <a href="/2016/05/10/Bootstrap/" class="article-date">
+  	<time datetime="2016-05-10T04:34:53.208Z" itemprop="datePublished">2016-05-10</time>
 </a>
     </div>
     
@@ -216,7 +216,7 @@
             
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/10/Twisted/">Twisted实例教程(一)</a>
+      <a class="article-title" href="/2016/05/10/Bootstrap/">几个漂亮的Bootstrap插件（已经视觉疲劳）</a>
     </h1>
   
 
@@ -225,87 +225,9 @@
         
         <div class="article-entry" itemprop="articleBody">
             
-            <!-- Table of Contents -->
-            
-            <p>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh" target="_blank" rel="external">署名-非商业用途-保持一致</a>的创作共用协议.</p>
-<p>本文章通过实际例子和用Twisted实现一个类似<code>QQ</code>那样的聊天室来逐步学习<code>Twisted</code></p>
-<h2 id="一、稍微来点基础">一、稍微来点基础</h2><p>首先,我们要明确一个概念,<code>Twisted</code>是一个完全事件驱动的网络框架.它允许你使用和开发完全异步的网络应用程序和协议.</p>
-<p><code>Twisted</code>常用函数:<br><code>connectionMade()</code>:函数:这个函数在客户端<strong>成功连接</strong>的时候被调用,即<strong>仅仅在连接成功的时候会调用一次</strong><br><code>dataReceived()</code>:函数:这个函数在客户端通过网络发送数据过来的时候被调用.<code>reactor</code>把数据当成参数传到这个函数中,这样我们就不用自己去解析数据了<br><code>self.transport</code>:一个Twisted的<code>transport</code>代表一个可以收发字节的单条连接.例如<code>ChatProtocol</code>的服务器它的此属性为<code>&lt;ChatProtocol #0 on 8123&gt;</code><br><code>self.transport.loseConnection():</code>断掉与服务器之间的连接<br><code>self.transport.getPeer</code>:获得主机(服务器)信息例如:<code>IPv4Address(TCP, &#39;127.0.0.1&#39;, 35836)</code>依次是 <strong>协议,IP地址,服务器端口号</strong><br><code>self.transport.getPeer().host</code>:获得主机信息的<code>IP地址</code><br><code>self.transport.client</code>属性:是一个元组,其中包含了客户端的地址(IP,端口)例如:<code>(&#39;127.0.0.1&#39;,35753)</code><br><code>protocol.Factory()</code>:它被称为<strong>工厂</strong>,每次连接进来的时候,它都会”生产”一个我们的<code>protocol</code>对象.然后在<code>reactor</code>中安装一个TCP监听器以等待服务请求.当有请求进来时,创建一个DemoProtocol实例来服务那个客户端.<br>具体的一个小例子如下:</p>
-<pre><code><span class="comment"># coding=utf-8</span>
-<span class="keyword">from</span> twisted.internet.protocol <span class="keyword">import</span> Protocol, Factory
-<span class="keyword">from</span> twisted.internet <span class="keyword">import</span> reactor
-
-PORT = <span class="number">21567</span>
-
-<span class="class"><span class="keyword">class</span> <span class="title">EchoProtocol</span><span class="params">(Protocol)</span>:</span>
-    <span class="function"><span class="keyword">def</span> <span class="title">connectionMade</span><span class="params">(self)</span>:</span>
-        <span class="keyword">print</span> <span class="string">'Got connection from'</span>, self.transport.client
-    <span class="function"><span class="keyword">def</span> <span class="title">connectionLost</span><span class="params">(self, reason)</span>:</span>
-        <span class="keyword">print</span> self.transport.client, <span class="string">'disconnected'</span>
-    <span class="function"><span class="keyword">def</span> <span class="title">dataReceived</span><span class="params">(self, data)</span>:</span>
-        <span class="keyword">print</span> self.transport.write(data)
-
-factory = Factory()<span class="comment"># 实例化Factory</span>
-factory.protocol = EchoProtocol  <span class="comment"># 设置factory的protocol属性以便它知道使用哪个protocol与客户端通信(这就是所谓的你的自定义protocol)</span>
-
-reactor.listenTCP(PORT, factory)
-reactor.run()
-</code></pre><p>对于客户端部分,需要注意的是:</p>
-<pre><code>class <span class="function"><span class="title">EchoClientFactory</span><span class="params">(protocol.clientFactory)</span></span>:
-    protocol = EchoClientProtocol
-    clientConnectionLost = clientConnectionFaild= \ 
-       lambda self,connector,reason:reactor.<span class="function"><span class="title">stop</span><span class="params">()</span></span>
-reactor.<span class="function"><span class="title">connectTCP</span><span class="params">(HOST,PORT,EchoClientFactory()</span></span>)
-reactor.<span class="function"><span class="title">run</span><span class="params">()</span></span>
-</code></pre><p>脚本的最后一部分是创建一个客户端工厂,连接到服务器,然后运行<code>reactor</code>.注意,我们在这里实例化了客户端工厂,而不是像在服务器里那样把它传到<code>reactor</code>中.这是因为,我们不是等待客户端连接的服务器,服务器在有连接时要为每个连接创建一个新的<code>protocol</code>对象.我们只是一个客户端,所以我们只要创建一个<code>protocol</code>对象,连接到服务器,服务器的工厂会创建一个<code>protocol</code>对象来与我们对话</p>
-<h2 id="二、提升效率的_defferred">二、提升效率的 defferred</h2><p>Twisted 官方称，“Twisted is event-based, asynchronous framework ”。<br>这个“异步”功能的代表就是 defferred。 defferred 的作用类似于“多线程”，负责保障多头连接、多项任务的异步执行。<br> 当然，defferred “异步”功能的实现，与多线程完全不同，具有以下特点：</p>
-<ol>
-<li>defferred 产生的 event，是函数调用返回的对象；</li>
-<li>defferred 代表一个连接任务，负责报告任务执行的延迟情况和最终结果；</li>
-<li>对defferred 的操作，通过预定的“事件响应器”（event handler）进行。 有了defferred，即可对任务的执行进行管理控制。防止程序的运行，由于等待某项任务的完成而陷入阻塞停滞，提高整体运行的效率。</li>
-</ol>
-<p>请看下面的例子： 建议只关注<strong>黑体字</strong>的语句，它们反映了defferred的用法。<br>涉及的两个class，是Twisted建立网络连接的固定套路，后面会专门说它。 </p>
-<pre><code><span class="comment"># connectiontest.py</span>
-<span class="keyword">from</span> twisted.internet <span class="keyword">import</span> reactor, defer,protocol 
-
-<span class="class"><span class="keyword">class</span> <span class="title">CallbackAndDisconnectProtocol</span><span class="params">(protocol.Protocol)</span>:</span>
-<span class="comment"># Twisted建立网络连接的固定套路</span>
-    <span class="function"><span class="keyword">def</span> <span class="title">connectionMade</span><span class="params">(self)</span>:</span> 
-        self.factory.deferred.callback(<span class="string">"Connected!"</span>)<span class="comment"># “事件响应器”handleSuccess对此事件作出处理</span>
-        self.transport.loseConnection( )
-
-<span class="class"><span class="keyword">class</span> <span class="title">ConnectionTestFactory</span><span class="params">(protocol.ClientFactory)</span>:</span> 
-<span class="comment"># Twisted建立网络连接的固定套路 </span>
-    protocol = CallbackAndDisconnectProtocol
-
-    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span> 
-        self.deferred = defer.Deferred( )<span class="comment"># 报告发生了延迟事件，防止程序阻塞在这个任务上</span>
-
-    <span class="function"><span class="keyword">def</span> <span class="title">clientConnectionFailed</span><span class="params">(self, connector, reason)</span>:</span>
-         self.deferred.errback(reason) <span class="comment"># “事件响应器”handleFailure对此事件作出处理</span>
-
-    <span class="function"><span class="keyword">def</span> <span class="title">testConnect</span><span class="params">(host, port)</span>:</span>
-         testFactory = ConnectionTestFactory( ) 
-         reactor.connectTCP(host, port, testFactory)
-         <span class="keyword">return</span> testFactory.deferred <span class="comment"># 返回连接任务的deferred </span>
-
-    <span class="function"><span class="keyword">def</span> <span class="title">handleSuccess</span><span class="params">(result, port)</span>:</span><span class="comment"># deferred“事件响应器”：连接任务完成的处理 </span>
-        <span class="keyword">print</span> <span class="string">"Connected to port %i"</span> % port reactor.stop( ) 
-
-    <span class="function"><span class="keyword">def</span> <span class="title">handleFailure</span><span class="params">(failure, port)</span>:</span> <span class="comment"># deferred“事件响应器”：连接任务失败的处理 print "Error connecting to port %i: %s" % ( port, failure.getErrorMessage( )) reactor.stop( ) if __name__ == "__main__": import sys if not len(sys.argv) == 3: print "Usage: connectiontest.py host port" sys.exit(1) host = sys.argv[1] port = int(sys.argv[2]) **connecting = testConnect(host, port)** # 调用函数，返回deferred **connecting.addCallback(handleSuccess, port)** # 建立deferred“事件响应器” **connecting.addErrback(handleFailure, port)** # 建立deferred“事件响应器” reactor.run( ) </span>
-</code></pre><h2 id="三、创建_client_的套路">三、创建 client 的套路</h2><p>第二节说到的两个类，是ＴＣＰ协议客户端的创建套路（方式）。这个套路拆解如下： </p>
-<ol>
-<li>定义“工厂”和“协议”两个类：<br>(1).  “协议”类是CallbackAndDisconnectProtocol，“工厂”类是 ConnectionTestFactory 类的名字不重要，但必须正确说明所继承的父类：<br><strong>class CallbackAndDisconnectProtocol(protocol.Protocol)</strong><br><strong>class ConnectionTestFactory(protocol.ClientFactory) </strong><br>(2). “协议”类是“工厂”类实例化的：<br><strong>protocol = CallbackAndDisconnectProtocol；</strong><br>(3).只在“工厂”类中有 <strong>init</strong>　函数，并在其中实例化一个deferred 对象：<br><strong> self.deferred = defer.Deferred( ) </strong><br>(4)在“工厂”类中，重设父类函数 <code>clientConnectionFailed</code>，通过<code>deferred</code>引发事件，报告连接失败：<br><strong> self.deferred.errback(reason)</strong><br>(5)在“协议”类中，重设父类函数 <code>connectionMade</code>，由对象<code>factory</code>引用“工厂”类中的deferred，经其引发事件，报告连接正常：<br><code>self.factory.deferred.callback(&quot;Connected!&quot;)</code><br>并由对象transport引发事件，报告连接断开：<br><code>self.transport.loseConnection( )；</code><br>上述“对象”，都是从各自父类继承来的。 </li>
-<li>在函数<code>testConnect(host, port)</code>中，<br>(1).将“工厂”类实例化：<br><code>testFactory = ConnectionTestFactory( )</code><br>(2).由全局循环“主持人”<code>reactor</code>建立以<code>testFactory为</code>“主演”的ＴＣＰ连接：<br><code>reactor.connectTCP(host, port, testFactory)</code><br>(3)返回deferred对象：<br><code>return testFactory.deferred</code></li>
-</ol>
-<p>至此，一个以事件驱动为基础、异步执行任务的框架程序搭成了。 上述三节的内容，据 Twisted 官方说，是“学习曲线最陡”的部分（They represent the steepest part of the Twisted learning curve.）。<br> 我的感受，造成“最陡”的原因，是由于套路新颖独特，初学乍练不易适应。</p>
-<ol>
-<li>框架对象众多，一时记不牢；</li>
-<li>对象之间的关系比较复杂，一时理不清；</li>
-<li>“事件驱动”这种模式，反映在程序文本中，有时见不到明显的函数调用，让人觉得程序的去向不明；</li>
-</ol>
-<p><strong>另外，学习方法很重要。如果以学“语言”的习惯来学框架，遇上问题寻根究底，过分追求“水落石出”；或者，依赖教科书、畸重“理论”，忽视 examples 语句、结构和ＡＰＩ文档的分析研究，都不利于翻越这段陡坡</strong>.我的体验，集中精力地啃嚼主干骨架，不纠緾于细枝末节，这段最陡的上坡路，顶多爬个十天八天的，就能越过去。</p>
-
+            <p><strong>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</strong></p>
+<p>前阵子自己用<code>jsp</code>开发个人Blog，思来想去还是Bootstrap用着顺手了，顺便也整理了一些网上有关Bootstrap的一些漂亮插件分享给大家。<br>使用方法大同小异，下载下来然后指定标签的<code>class</code>属性即可.<br>eg:<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;input <span class="class"><span class="keyword">type</span>=</span><span class="string">"textarea"</span> <span class="class"><span class="keyword">class</span>=</span><span class="string">"wysihtml5"</span>/&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="1-_可视化编辑器">1. 可视化编辑器</h2>
             
         </div>
         
@@ -313,11 +235,140 @@ reactor.<span class="function"><span class="title">run</span><span class="params
             
             
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Twisted/">Twisted</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Bootstrap/">Bootstrap</a></li></ul>
 	</div>
 
             
 
+            
+            <p class="article-more-link">
+                <a 
+                   href="/2016/05/10/Bootstrap/#more">more >></a>
+            </p>
+            
+            <div class="clearfix"></div>
+        </div>
+        
+    </div>
+    
+</article>
+
+
+
+
+
+  
+    <article id="post-py-construct" class="article article-type-post" itemscope
+         itemprop="blogPost">
+    
+    <div class="article-meta">
+        <a href="/2016/05/10/py-construct/" class="article-date">
+  	<time datetime="2016-05-10T04:34:21.008Z" itemprop="datePublished">2016-05-10</time>
+</a>
+    </div>
+    
+    <div class="article-inner">
+        
+        <input type="hidden" class="isFancy"/>
+        
+        
+        <header class="article-header">
+            
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/10/py-construct/">使用Python-Construct解析数据和生成协议</a>
+    </h1>
+  
+
+        </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+            <p><strong>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</strong></p>
+<p>&#160; &#160; &#160; &#160;直接切入正题，我们知道在<code>Python</code>中解析数据包有一个内置的<code>Struct</code>库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)</p>
+<h2 id="construct的作用">construct的作用</h2><blockquote>
+<p>&#160; &#160; &#160; &#160;Construct is a powerful declarative parser (and builder) for binary data.</p>
+<p>&#160; &#160; &#160; &#160;Instead of writing imperative code to parse a piece of data, you declaratively define a data structure that describes your data. As this data structure is not code, you can use it in one direction to parse data into Pythonic objects, and in the other direction, convert (“build”) objects into binary data.</p>
+<p>&#160; &#160; &#160; &#160;The library provides both simple, atomic constructs (such as integers of various sizes), as well as composite ones which allow you form hierarchical structures of increasing complexity. Construct features bit and byte granularity, easy debugging and testing, an easy-to-extend subclass system, and lots of primitive constructs to make your work easier:</p>
+</blockquote>
+            
+        </div>
+        
+        <div class="article-info article-info-index">
+            
+            
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/construct/">construct</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+	</div>
+
+            
+
+            
+            <p class="article-more-link">
+                <a 
+                   href="/2016/05/10/py-construct/#more">more >></a>
+            </p>
+            
+            <div class="clearfix"></div>
+        </div>
+        
+    </div>
+    
+</article>
+
+
+
+
+
+  
+    <article id="post-hello-world" class="article article-type-post" itemscope
+         itemprop="blogPost">
+    
+    <div class="article-meta">
+        <a href="/2016/05/10/hello-world/" class="article-date">
+  	<time datetime="2016-05-10T04:34:14.608Z" itemprop="datePublished">2016-05-10</time>
+</a>
+    </div>
+    
+    <div class="article-inner">
+        
+        <input type="hidden" class="isFancy"/>
+        
+        
+        <header class="article-header">
+            
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/10/hello-world/">简书博客搬迁计划</a>
+    </h1>
+  
+
+        </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+            <p><strong>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</strong></p>
+<p>最近想把以前写过的简书上的Blog搬迁到自己的网站上<br>有关生活，有关工作。<br>XzAmrzs的意思是: 邢(X)志(z)鹏(Amrzs) 用Amrzs这个单词是因为它表示西方神鸟，中文又”鹏”</p>
+<p>还有还有:<br>
+            
+        </div>
+        
+        <div class="article-info article-info-index">
+            
+            
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+	</div>
+
+            
+
+            
+            <p class="article-more-link">
+                <a 
+                   href="/2016/05/10/hello-world/#more">more >></a>
+            </p>
             
             <div class="clearfix"></div>
         </div>
@@ -336,7 +387,7 @@ reactor.<span class="function"><span class="title">run</span><span class="params
     
     <div class="article-meta">
         <a href="/2016/05/10/RFID-Twisted/" class="article-date">
-  	<time datetime="2016-05-10T04:29:51.664Z" itemprop="datePublished">2016-05-10</time>
+  	<time datetime="2016-05-10T04:34:08.598Z" itemprop="datePublished">2016-05-10</time>
 </a>
     </div>
     
@@ -358,7 +409,7 @@ reactor.<span class="function"><span class="title">run</span><span class="params
         
         <div class="article-entry" itemprop="articleBody">
             
-            <p>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</p>
+            <p><strong>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</strong></p>
 <h2 id="一-_发送相关:">一. 发送相关:</h2><ol>
 <li><code>self.transport.write()</code>函数只能发送<strong>字符串</strong>类型的参数!!!</li>
 <li><p><code>RFID</code>只接收字节流的指令码!!!</p>
@@ -392,76 +443,12 @@ reactor.<span class="function"><span class="title">run</span><span class="params
 
 
   
-    <article id="post-py-virtualenv" class="article article-type-post" itemscope
-         itemprop="blogPost">
-    
-    <div class="article-meta">
-        <a href="/2016/05/10/py-virtualenv/" class="article-date">
-  	<time datetime="2016-05-10T04:29:47.530Z" itemprop="datePublished">2016-05-10</time>
-</a>
-    </div>
-    
-    <div class="article-inner">
-        
-        <input type="hidden" class="isFancy"/>
-        
-        
-        <header class="article-header">
-            
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/10/py-virtualenv/">使用virtualenvwrapper隔离python开发环境</a>
-    </h1>
-  
-
-        </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-            
-            <p>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</p>
-<p><strong>背景</strong>：<br>作为一名pythoner，使用virtualenv来隔离开发环境我相信已经不用我再介绍是为什么了。而<code>virtualenvwrapper</code>是<code>virtualenv</code>的一个拓展，可以让我们更加方便的使用和管理多个<code>virtualenv</code>实例，我们通过二者对比来学习一下。<br>使用virtualenv的一般流程是:</p>
-<ol>
-<li>创建虚拟环境: <code>virtualenv venv</code></li>
-<li>激活虚拟环境: <code>source venv/bin/activate</code>(windows下是直接<code>venv\Scripts\activate</code>)</li>
-<li>安装依赖包: <code>pip install -r requirements.txt</code></li>
-<li>退出虚拟环境: <code>deactive</code>
-            
-        </div>
-        
-        <div class="article-info article-info-index">
-            
-            
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
-	</div>
-
-            
-
-            
-            <p class="article-more-link">
-                <a 
-                   href="/2016/05/10/py-virtualenv/#more">more >></a>
-            </p>
-            
-            <div class="clearfix"></div>
-        </div>
-        
-    </div>
-    
-</article>
-
-
-
-
-
-  
     <article id="post-py-decorator" class="article article-type-post" itemscope
          itemprop="blogPost">
     
     <div class="article-meta">
         <a href="/2016/05/10/py-decorator/" class="article-date">
-  	<time datetime="2016-05-10T04:29:42.798Z" itemprop="datePublished">2016-05-10</time>
+  	<time datetime="2016-05-10T04:34:04.182Z" itemprop="datePublished">2016-05-10</time>
 </a>
     </div>
     
@@ -483,7 +470,7 @@ reactor.<span class="function"><span class="title">run</span><span class="params
         
         <div class="article-entry" itemprop="articleBody">
             
-            <p>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</p>
+            <p><strong>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</strong></p>
 <p>自定义的修饰器.<br>一个不带参数的装饰器:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="decorator">@decorator</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure></p>
 <p>上面这段代码就等于下面的实现:<br>
             
@@ -502,70 +489,6 @@ reactor.<span class="function"><span class="title">run</span><span class="params
             <p class="article-more-link">
                 <a 
                    href="/2016/05/10/py-decorator/#more">more >></a>
-            </p>
-            
-            <div class="clearfix"></div>
-        </div>
-        
-    </div>
-    
-</article>
-
-
-
-
-
-  
-    <article id="post-py-construct" class="article article-type-post" itemscope
-         itemprop="blogPost">
-    
-    <div class="article-meta">
-        <a href="/2016/05/10/py-construct/" class="article-date">
-  	<time datetime="2016-05-10T04:29:38.607Z" itemprop="datePublished">2016-05-10</time>
-</a>
-    </div>
-    
-    <div class="article-inner">
-        
-        <input type="hidden" class="isFancy"/>
-        
-        
-        <header class="article-header">
-            
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/10/py-construct/">使用Python-Construct解析数据和生成协议</a>
-    </h1>
-  
-
-        </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-            
-            <p>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</p>
-<p>&#160; &#160; &#160; &#160;直接切入正题，我们知道在<code>Python</code>中解析数据包有一个内置的<code>Struct</code>库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)</p>
-<h2 id="construct的作用">construct的作用</h2><blockquote>
-<p>&#160; &#160; &#160; &#160;Construct is a powerful declarative parser (and builder) for binary data.</p>
-<p>&#160; &#160; &#160; &#160;Instead of writing imperative code to parse a piece of data, you declaratively define a data structure that describes your data. As this data structure is not code, you can use it in one direction to parse data into Pythonic objects, and in the other direction, convert (“build”) objects into binary data.</p>
-<p>&#160; &#160; &#160; &#160;The library provides both simple, atomic constructs (such as integers of various sizes), as well as composite ones which allow you form hierarchical structures of increasing complexity. Construct features bit and byte granularity, easy debugging and testing, an easy-to-extend subclass system, and lots of primitive constructs to make your work easier:</p>
-</blockquote>
-            
-        </div>
-        
-        <div class="article-info article-info-index">
-            
-            
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/construct/">construct</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
-	</div>
-
-            
-
-            
-            <p class="article-more-link">
-                <a 
-                   href="/2016/05/10/py-construct/#more">more >></a>
             </p>
             
             <div class="clearfix"></div>

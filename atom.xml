@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://happyxzp.com/"/>
-  <updated>2016-05-10T04:29:57.036Z</updated>
+  <updated>2016-05-10T04:34:53.206Z</updated>
   <id>http://happyxzp.com/</id>
   
   <author>
@@ -16,271 +16,67 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Twisted实例教程(一)</title>
-    <link href="http://happyxzp.com/2016/05/10/Twisted/"/>
-    <id>http://happyxzp.com/2016/05/10/Twisted/</id>
-    <published>2016-05-10T04:29:57.037Z</published>
-    <updated>2016-05-10T04:29:57.036Z</updated>
+    <title>几个漂亮的Bootstrap插件（已经视觉疲劳）</title>
+    <link href="http://happyxzp.com/2016/05/10/Bootstrap/"/>
+    <id>http://happyxzp.com/2016/05/10/Bootstrap/</id>
+    <published>2016-05-10T04:34:53.208Z</published>
+    <updated>2016-05-10T04:34:53.206Z</updated>
     
-    <content type="html">&lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/p&gt;
-&lt;p&gt;本文章通过实际例子和用Twisted实现一个类似&lt;code&gt;QQ&lt;/code&gt;那样的聊天室来逐步学习&lt;code&gt;Twisted&lt;/code&gt;&lt;/p&gt;
-&lt;h2 id=&quot;一、稍微来点基础&quot;&gt;一、稍微来点基础&lt;/h2&gt;&lt;p&gt;首先,我们要明确一个概念,&lt;code&gt;Twisted&lt;/code&gt;是一个完全事件驱动的网络框架.它允许你使用和开发完全异步的网络应用程序和协议.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;Twisted&lt;/code&gt;常用函数:&lt;br&gt;&lt;code&gt;connectionMade()&lt;/code&gt;:函数:这个函数在客户端&lt;strong&gt;成功连接&lt;/strong&gt;的时候被调用,即&lt;strong&gt;仅仅在连接成功的时候会调用一次&lt;/strong&gt;&lt;br&gt;&lt;code&gt;dataReceived()&lt;/code&gt;:函数:这个函数在客户端通过网络发送数据过来的时候被调用.&lt;code&gt;reactor&lt;/code&gt;把数据当成参数传到这个函数中,这样我们就不用自己去解析数据了&lt;br&gt;&lt;code&gt;self.transport&lt;/code&gt;:一个Twisted的&lt;code&gt;transport&lt;/code&gt;代表一个可以收发字节的单条连接.例如&lt;code&gt;ChatProtocol&lt;/code&gt;的服务器它的此属性为&lt;code&gt;&amp;lt;ChatProtocol #0 on 8123&amp;gt;&lt;/code&gt;&lt;br&gt;&lt;code&gt;self.transport.loseConnection():&lt;/code&gt;断掉与服务器之间的连接&lt;br&gt;&lt;code&gt;self.transport.getPeer&lt;/code&gt;:获得主机(服务器)信息例如:&lt;code&gt;IPv4Address(TCP, &amp;#39;127.0.0.1&amp;#39;, 35836)&lt;/code&gt;依次是 &lt;strong&gt;协议,IP地址,服务器端口号&lt;/strong&gt;&lt;br&gt;&lt;code&gt;self.transport.getPeer().host&lt;/code&gt;:获得主机信息的&lt;code&gt;IP地址&lt;/code&gt;&lt;br&gt;&lt;code&gt;self.transport.client&lt;/code&gt;属性:是一个元组,其中包含了客户端的地址(IP,端口)例如:&lt;code&gt;(&amp;#39;127.0.0.1&amp;#39;,35753)&lt;/code&gt;&lt;br&gt;&lt;code&gt;protocol.Factory()&lt;/code&gt;:它被称为&lt;strong&gt;工厂&lt;/strong&gt;,每次连接进来的时候,它都会”生产”一个我们的&lt;code&gt;protocol&lt;/code&gt;对象.然后在&lt;code&gt;reactor&lt;/code&gt;中安装一个TCP监听器以等待服务请求.当有请求进来时,创建一个DemoProtocol实例来服务那个客户端.&lt;br&gt;具体的一个小例子如下:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;# coding=utf-8&lt;/span&gt;
-&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet.protocol &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; Protocol, Factory
-&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; reactor
-
-PORT = &lt;span class=&quot;number&quot;&gt;21567&lt;/span&gt;
-
-&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;EchoProtocol&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Protocol)&lt;/span&gt;:&lt;/span&gt;
-    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;connectionMade&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self)&lt;/span&gt;:&lt;/span&gt;
-        &lt;span class=&quot;keyword&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;Got connection from&#39;&lt;/span&gt;, self.transport.client
-    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;connectionLost&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, reason)&lt;/span&gt;:&lt;/span&gt;
-        &lt;span class=&quot;keyword&quot;&gt;print&lt;/span&gt; self.transport.client, &lt;span class=&quot;string&quot;&gt;&#39;disconnected&#39;&lt;/span&gt;
-    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;dataReceived&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, data)&lt;/span&gt;:&lt;/span&gt;
-        &lt;span class=&quot;keyword&quot;&gt;print&lt;/span&gt; self.transport.write(data)
-
-factory = Factory()&lt;span class=&quot;comment&quot;&gt;# 实例化Factory&lt;/span&gt;
-factory.protocol = EchoProtocol  &lt;span class=&quot;comment&quot;&gt;# 设置factory的protocol属性以便它知道使用哪个protocol与客户端通信(这就是所谓的你的自定义protocol)&lt;/span&gt;
-
-reactor.listenTCP(PORT, factory)
-reactor.run()
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;对于客户端部分,需要注意的是:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;class &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;EchoClientFactory&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(protocol.clientFactory)&lt;/span&gt;&lt;/span&gt;:
-    protocol = EchoClientProtocol
-    clientConnectionLost = clientConnectionFaild= \ 
-       lambda self,connector,reason:reactor.&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;
-reactor.&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;connectTCP&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(HOST,PORT,EchoClientFactory()&lt;/span&gt;&lt;/span&gt;)
-reactor.&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;脚本的最后一部分是创建一个客户端工厂,连接到服务器,然后运行&lt;code&gt;reactor&lt;/code&gt;.注意,我们在这里实例化了客户端工厂,而不是像在服务器里那样把它传到&lt;code&gt;reactor&lt;/code&gt;中.这是因为,我们不是等待客户端连接的服务器,服务器在有连接时要为每个连接创建一个新的&lt;code&gt;protocol&lt;/code&gt;对象.我们只是一个客户端,所以我们只要创建一个&lt;code&gt;protocol&lt;/code&gt;对象,连接到服务器,服务器的工厂会创建一个&lt;code&gt;protocol&lt;/code&gt;对象来与我们对话&lt;/p&gt;
-&lt;h2 id=&quot;二、提升效率的_defferred&quot;&gt;二、提升效率的 defferred&lt;/h2&gt;&lt;p&gt;Twisted 官方称，“Twisted is event-based, asynchronous framework ”。&lt;br&gt;这个“异步”功能的代表就是 defferred。 defferred 的作用类似于“多线程”，负责保障多头连接、多项任务的异步执行。&lt;br&gt; 当然，defferred “异步”功能的实现，与多线程完全不同，具有以下特点：&lt;/p&gt;
+    <content type="html">&lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;前阵子自己用&lt;code&gt;jsp&lt;/code&gt;开发个人Blog，思来想去还是Bootstrap用着顺手了，顺便也整理了一些网上有关Bootstrap的一些漂亮插件分享给大家。&lt;br&gt;使用方法大同小异，下载下来然后指定标签的&lt;code&gt;class&lt;/code&gt;属性即可.&lt;br&gt;eg:&lt;br&gt;&lt;figure class=&quot;highlight scala&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;input &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;type&lt;/span&gt;=&lt;/span&gt;&lt;span class=&quot;string&quot;&gt;&quot;textarea&quot;&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;=&lt;/span&gt;&lt;span class=&quot;string&quot;&gt;&quot;wysihtml5&quot;&lt;/span&gt;/&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;h2 id=&quot;1-_可视化编辑器&quot;&gt;1. 可视化编辑器&lt;/h2&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
 &lt;ol&gt;
-&lt;li&gt;defferred 产生的 event，是函数调用返回的对象；&lt;/li&gt;
-&lt;li&gt;defferred 代表一个连接任务，负责报告任务执行的延迟情况和最终结果；&lt;/li&gt;
-&lt;li&gt;对defferred 的操作，通过预定的“事件响应器”（event handler）进行。 有了defferred，即可对任务的执行进行管理控制。防止程序的运行，由于等待某项任务的完成而陷入阻塞停滞，提高整体运行的效率。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://jhollingworth.github.io/bootstrap-wysihtml5/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;bootstrap-wysihtml5&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-d4e7b644aeb49330.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A Javascript plugin that makes it easy to create simple WYSIWYG editors&quot;&gt;&lt;br&gt;2.&lt;a href=&quot;http://hackerwins.github.io/summernote/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Summernote&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-27845387ee81b99d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A simple WYSIWYG editor for Bootstrap&quot;&gt;&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;请看下面的例子： 建议只关注&lt;strong&gt;黑体字&lt;/strong&gt;的语句，它们反映了defferred的用法。&lt;br&gt;涉及的两个class，是Twisted建立网络连接的固定套路，后面会专门说它。 &lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;# connectiontest.py&lt;/span&gt;
-&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; reactor, defer,protocol 
-
-&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;CallbackAndDisconnectProtocol&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(protocol.Protocol)&lt;/span&gt;:&lt;/span&gt;
-&lt;span class=&quot;comment&quot;&gt;# Twisted建立网络连接的固定套路&lt;/span&gt;
-    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;connectionMade&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self)&lt;/span&gt;:&lt;/span&gt; 
-        self.factory.deferred.callback(&lt;span class=&quot;string&quot;&gt;&quot;Connected!&quot;&lt;/span&gt;)&lt;span class=&quot;comment&quot;&gt;# “事件响应器”handleSuccess对此事件作出处理&lt;/span&gt;
-        self.transport.loseConnection( )
-
-&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ConnectionTestFactory&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(protocol.ClientFactory)&lt;/span&gt;:&lt;/span&gt; 
-&lt;span class=&quot;comment&quot;&gt;# Twisted建立网络连接的固定套路 &lt;/span&gt;
-    protocol = CallbackAndDisconnectProtocol
-
-    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self)&lt;/span&gt;:&lt;/span&gt; 
-        self.deferred = defer.Deferred( )&lt;span class=&quot;comment&quot;&gt;# 报告发生了延迟事件，防止程序阻塞在这个任务上&lt;/span&gt;
-
-    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;clientConnectionFailed&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, connector, reason)&lt;/span&gt;:&lt;/span&gt;
-         self.deferred.errback(reason) &lt;span class=&quot;comment&quot;&gt;# “事件响应器”handleFailure对此事件作出处理&lt;/span&gt;
-
-    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;testConnect&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(host, port)&lt;/span&gt;:&lt;/span&gt;
-         testFactory = ConnectionTestFactory( ) 
-         reactor.connectTCP(host, port, testFactory)
-         &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; testFactory.deferred &lt;span class=&quot;comment&quot;&gt;# 返回连接任务的deferred &lt;/span&gt;
-
-    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;handleSuccess&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(result, port)&lt;/span&gt;:&lt;/span&gt;&lt;span class=&quot;comment&quot;&gt;# deferred“事件响应器”：连接任务完成的处理 &lt;/span&gt;
-        &lt;span class=&quot;keyword&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;Connected to port %i&quot;&lt;/span&gt; % port reactor.stop( ) 
-
-    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;handleFailure&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(failure, port)&lt;/span&gt;:&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;# deferred“事件响应器”：连接任务失败的处理 print &quot;Error connecting to port %i: %s&quot; % ( port, failure.getErrorMessage( )) reactor.stop( ) if __name__ == &quot;__main__&quot;: import sys if not len(sys.argv) == 3: print &quot;Usage: connectiontest.py host port&quot; sys.exit(1) host = sys.argv[1] port = int(sys.argv[2]) **connecting = testConnect(host, port)** # 调用函数，返回deferred **connecting.addCallback(handleSuccess, port)** # 建立deferred“事件响应器” **connecting.addErrback(handleFailure, port)** # 建立deferred“事件响应器” reactor.run( ) &lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&quot;三、创建_client_的套路&quot;&gt;三、创建 client 的套路&lt;/h2&gt;&lt;p&gt;第二节说到的两个类，是ＴＣＰ协议客户端的创建套路（方式）。这个套路拆解如下： &lt;/p&gt;
+&lt;p&gt;##2. 日期选择器&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;定义“工厂”和“协议”两个类：&lt;br&gt;(1).  “协议”类是CallbackAndDisconnectProtocol，“工厂”类是 ConnectionTestFactory 类的名字不重要，但必须正确说明所继承的父类：&lt;br&gt;&lt;strong&gt;class CallbackAndDisconnectProtocol(protocol.Protocol)&lt;/strong&gt;&lt;br&gt;&lt;strong&gt;class ConnectionTestFactory(protocol.ClientFactory) &lt;/strong&gt;&lt;br&gt;(2). “协议”类是“工厂”类实例化的：&lt;br&gt;&lt;strong&gt;protocol = CallbackAndDisconnectProtocol；&lt;/strong&gt;&lt;br&gt;(3).只在“工厂”类中有 &lt;strong&gt;init&lt;/strong&gt;　函数，并在其中实例化一个deferred 对象：&lt;br&gt;&lt;strong&gt; self.deferred = defer.Deferred( ) &lt;/strong&gt;&lt;br&gt;(4)在“工厂”类中，重设父类函数 &lt;code&gt;clientConnectionFailed&lt;/code&gt;，通过&lt;code&gt;deferred&lt;/code&gt;引发事件，报告连接失败：&lt;br&gt;&lt;strong&gt; self.deferred.errback(reason)&lt;/strong&gt;&lt;br&gt;(5)在“协议”类中，重设父类函数 &lt;code&gt;connectionMade&lt;/code&gt;，由对象&lt;code&gt;factory&lt;/code&gt;引用“工厂”类中的deferred，经其引发事件，报告连接正常：&lt;br&gt;&lt;code&gt;self.factory.deferred.callback(&amp;quot;Connected!&amp;quot;)&lt;/code&gt;&lt;br&gt;并由对象transport引发事件，报告连接断开：&lt;br&gt;&lt;code&gt;self.transport.loseConnection( )；&lt;/code&gt;&lt;br&gt;上述“对象”，都是从各自父类继承来的。 &lt;/li&gt;
-&lt;li&gt;在函数&lt;code&gt;testConnect(host, port)&lt;/code&gt;中，&lt;br&gt;(1).将“工厂”类实例化：&lt;br&gt;&lt;code&gt;testFactory = ConnectionTestFactory( )&lt;/code&gt;&lt;br&gt;(2).由全局循环“主持人”&lt;code&gt;reactor&lt;/code&gt;建立以&lt;code&gt;testFactory为&lt;/code&gt;“主演”的ＴＣＰ连接：&lt;br&gt;&lt;code&gt;reactor.connectTCP(host, port, testFactory)&lt;/code&gt;&lt;br&gt;(3)返回deferred对象：&lt;br&gt;&lt;code&gt;return testFactory.deferred&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.eyecon.ro/bootstrap-datepicker/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Datepicker&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-f2ac69ded508650e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A plugin for adding a datepicker field to any element&quot;&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://weareoutman.github.io/clockpicker/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;ClockPicker&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-cf73cf4f99156295.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A unique clock-style timepicker for Bootstrap&quot;&gt;&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;至此，一个以事件驱动为基础、异步执行任务的框架程序搭成了。 上述三节的内容，据 Twisted 官方说，是“学习曲线最陡”的部分（They represent the steepest part of the Twisted learning curve.）。&lt;br&gt; 我的感受，造成“最陡”的原因，是由于套路新颖独特，初学乍练不易适应。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;框架对象众多，一时记不牢；&lt;/li&gt;
-&lt;li&gt;对象之间的关系比较复杂，一时理不清；&lt;/li&gt;
-&lt;li&gt;“事件驱动”这种模式，反映在程序文本中，有时见不到明显的函数调用，让人觉得程序的去向不明；&lt;/li&gt;
+&lt;h2 id=&quot;3-数据分析生成器&quot;&gt;3.数据分析生成器&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.dangrossman.info/2012/08/20/a-date-range-picker-for-twitter-bootstrap/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Date Range Picker&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-7cd2441c5a609036.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;This date range picker component creates a drop-down from which you can select a range of dates Extending Bootstrap&quot;&gt;&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;strong&gt;另外，学习方法很重要。如果以学“语言”的习惯来学框架，遇上问题寻根究底，过分追求“水落石出”；或者，依赖教科书、畸重“理论”，忽视 examples 语句、结构和ＡＰＩ文档的分析研究，都不利于翻越这段陡坡&lt;/strong&gt;.我的体验，集中精力地啃嚼主干骨架，不纠緾于细枝末节，这段最陡的上坡路，顶多爬个十天八天的，就能越过去。&lt;/p&gt;
+&lt;h2 id=&quot;4-对话框提示框&quot;&gt;4.对话框提示框&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;http://bootboxjs.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Bootbox.js&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-b976d07b137c61f4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;small JS library that allows you to create programmatic dialog boxes using Bootstraps modals&quot;&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;5-文件上传插件&quot;&gt;5.文件上传插件&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;http://blueimp.github.io/jQuery-File-Upload/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;jQuery File Upload&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-1bec32649ea6a15a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A file upload widget which features multiple file selection, drag &amp;amp; drop, progress bars&quot;&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;6-表单验证插件&quot;&gt;6.表单验证插件&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;http://bootstrapvalidator.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;BootstrapValidator&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-e5dd92a6bb67c123.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot; [API](http://bv.doc.javake.cn/api/)  A jQuery plugin for vaildating forms within Bootstrap&quot;&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://reactiveraven.github.io/jqBootstrapValidation/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;jqBootstrapValidation&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-411613694aa83fd0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;jqBootstrapValidation&amp;lt;/strong&amp;gt;&amp;lt;/a&amp;gt; – Another jQuery validation framework for Bootstrap”/&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;br /&amp;gt;&amp;lt;p&amp;gt;&amp;lt;a target=&quot;&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;7-相册插件&quot;&gt;7.相册插件&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;http://blueimp.github.io/Bootstrap-Image-Gallery/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Image Gallery&lt;/strong&gt;&lt;/a&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-7ddfe9f3120ec06b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;plugin shows images and videos in the modal dialog of the Bootstrap&quot;&gt;&lt;br&gt;2.&lt;a href=&quot;http://plugins.krajee.com/file-input&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt; Bootstrap File Input&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;https://camo.githubusercontent.com/187b76c156ed53e1e7c29266ee19b164be192ffe/68747470733a2f2f6c68332e676f6f676c6575736572636f6e74656e742e636f6d2f2d334669456d635f6f6b63342f5642775f64324c42414a492f4141414141414141414c382f4b62566a355839447573302f773539362d683435342d6e6f2f46696c65496e7075742e6a7067&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;img src=&quot;https://camo.githubusercontent.com/187b76c156ed53e1e7c29266ee19b164be192ffe/68747470733a2f2f6c68332e676f6f676c6575736572636f6e74656e742e636f6d2f2d334669456d635f6f6b63342f5642775f64324c42414a492f4141414141414141414c382f4b62566a355839447573302f773539362d683435342d6e6f2f46696c65496e7075742e6a7067&quot; alt=&quot;File Input Screenshot&quot;&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;8-文字编辑&quot;&gt;8.文字编辑&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;http://vitalets.github.io/x-editable/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;X-editable&lt;/strong&gt;&lt;/a&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-8e221d4026cf7bf5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A library that allows you to create editable elements on your Bootstrap page&quot;&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://toopay.github.io/bootstrap-markdown/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Bootstrap Markdown&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-b2c59e504440d111.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A plugin for enabling Markdown editing in Bootstrap&quot;&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;9-标签&quot;&gt;9.标签&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/maxwells/bootstrap-tags&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Bootstrap Tags&lt;/strong&gt;&lt;/a&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-b388c595a6298133.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;jQuery plugin for adding tagging functionality Bootstrap&quot;&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sliptree.github.io/bootstrap-tokenfield/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Tokenfield&lt;/strong&gt;&lt;/a&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-e6f3d7d6ef8ba68a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;An advanced tagging jQuery plugin for Bootstrap&quot;&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;10-Website_Tour(新手指引！)&quot;&gt;10.Website Tour(新手指引！)&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;http://bootstraptour.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Bootstrap Tour&lt;/strong&gt;&lt;/a&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-18466845221c5ce3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A quick and easy way to build your product tours with Bootstrap Popovers&quot;&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://clu3.github.io/bootstro.js/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Bootstro.js&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-635e79aa5b27756f.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;Bootstro-js&quot;&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;11-按钮&quot;&gt;11.按钮&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;社交媒体按钮&lt;br&gt;&lt;a href=&quot;http://lipis.github.io/bootstrap-social/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Social Buttons for Bootstrap&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-e5f096b8eeebb5a5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A pure CSS social sign-in button library for bootstrap&quot;&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;先就这么多了，以后遇到更好的再补充。&lt;/p&gt;
 </content>
     
     <summary type="html">
     
-      &lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel
+      &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;前阵子自己用&lt;code&gt;jsp&lt;/code&gt;开发个人Blog，思来想去还是Bootstrap用着顺手了，顺便也整理了一些网上有关Bootstrap的一些漂亮插件分享给大家。&lt;br&gt;使用方法大同小异，下载下来然后指定标签的&lt;code&gt;class&lt;/code&gt;属性即可.&lt;br&gt;eg:&lt;br&gt;&lt;figure class=&quot;highlight scala&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;input &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;type&lt;/span&gt;=&lt;/span&gt;&lt;span class=&quot;string&quot;&gt;&quot;textarea&quot;&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;=&lt;/span&gt;&lt;span class=&quot;string&quot;&gt;&quot;wysihtml5&quot;&lt;/span&gt;/&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;h2 id=&quot;1-_可视化编辑器&quot;&gt;1. 可视化编辑器&lt;/h2&gt;
     
     </summary>
     
     
-      <category term="Twisted" scheme="http://happyxzp.com/tags/Twisted/"/>
-    
-      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Twisted解析RFID数据传输整理</title>
-    <link href="http://happyxzp.com/2016/05/10/RFID-Twisted/"/>
-    <id>http://happyxzp.com/2016/05/10/RFID-Twisted/</id>
-    <published>2016-05-10T04:29:51.664Z</published>
-    <updated>2016-05-10T04:29:51.663Z</updated>
-    
-    <content type="html">&lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/p&gt;
-&lt;h2 id=&quot;一-_发送相关:&quot;&gt;一. 发送相关:&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;self.transport.write()&lt;/code&gt;函数只能发送&lt;strong&gt;字符串&lt;/strong&gt;类型的参数!!!&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;code&gt;RFID&lt;/code&gt;只接收字节流的指令码!!!&lt;/p&gt;
-&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
-&lt;h3 id=&quot;所以:&quot;&gt;所以:&lt;/h3&gt;&lt;p&gt;(1). 可直接发送字节流的字符串表示&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;data = ‘\xff\xff\xf1\x07\x06\xf1’ &lt;code&gt;#类型是str,但打印出来是无法识别的字节码&lt;/code&gt;&lt;br&gt;self.transport.write(data)&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;(2). 给参数赋值字符串指令码(此时并不是字节流所以要进行下一步)&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;dataStr =’FF FF F1 06 06 F1’&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;然后用&lt;code&gt;bytearray.fromhex(dataStr)&lt;/code&gt;将&lt;strong&gt;字符串转换成字节流&lt;/strong&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;byteData=bytearray.fromhex(dataStr)&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;最后将&lt;strong&gt;字节流转换成字符串&lt;/strong&gt;进行发送&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;self.transport.write(str(bytedata))&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h1 id=&quot;二-_接收相关&quot;&gt;二. 接收相关&lt;/h1&gt;&lt;ol&gt;
-&lt;li&gt;从RFID接收过来的数据是字节流的字符串表示(即&lt;code&gt;字节串&lt;/code&gt;,字节串其实就是字节流).类型是&lt;code&gt;str&lt;/code&gt;.&lt;code&gt;print&lt;/code&gt;出来是无法识别的字节码同&lt;code&gt;一中的(1)&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;实践证明&lt;code&gt;datareceived&lt;/code&gt;对&lt;code&gt;RFID&lt;/code&gt;传过来的数据是&lt;strong&gt;一个字节一个字节&lt;/strong&gt;的进行接收的,这个函数宏观上只执行了一次,但是实际上有几个字节执行几次,一直到接受完毕为止.&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;对字节流数据进行解析(解包)的&lt;code&gt;construct&lt;/code&gt;函数,&lt;strong&gt;只接收字节串(字节流)参数&lt;/strong&gt;所以需要再转换成字节串才能进行解析&lt;/p&gt;
-&lt;h3 id=&quot;所以:-1&quot;&gt;所以:&lt;/h3&gt;&lt;p&gt;(1).先使用 &lt;code&gt;binascii.b2a_hex(data)&lt;/code&gt;或者&lt;code&gt;hexlify(data)&lt;/code&gt;.由函数意思&lt;strong&gt;binary to ascii&lt;/strong&gt;.作用是返回的二进制数据的十六进制表示.&lt;strong&gt;每一个字节的数据转换成相应的2位十六进制表示.&lt;/strong&gt;因此产生的字串是源数据两倍长度。&lt;code&gt;a2b_hex&lt;/code&gt;和&lt;code&gt;unhexlify&lt;/code&gt;则执行反向操作(所得仍然是字符串类型)&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;self.data_list += binascii.b2a_hex(data) &lt;code&gt;#累加字符串,注意,字节串是不能直接进行加法的.&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;strong&gt;若是只进行串口的调试其实到这一步就算通了&lt;/strong&gt;&lt;br&gt;(2). 对(1)中转化成的字符串再次转化成字节流&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;byteData = bytearray.fromhex(self.data_list) &lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;(3). 对字节流中的数据进行解包处理.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;pkgs, leftovers = self.rfid.parse_pkgs(byteData)  &lt;code&gt;# 解析字节流转化为可识别的指令码存在pkgs(一个列表),剩下的存在leftovers&lt;/code&gt;&lt;br&gt;if len(pkgs) != 0 and len(leftovers) == 0:  &lt;code&gt;对数据包的正确性进行判断&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;(4). 处理数据&lt;br&gt;调用handlDatas函数.从返回的列表中取有用的数据&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/p&gt;
-&lt;h2 id=&quot;一-_发送相关:&quot;&gt;一. 发送相关:&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;self.transport.write()&lt;/code&gt;函数只能发送&lt;strong&gt;字符串&lt;/strong&gt;类型的参数!!!&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;code&gt;RFID&lt;/code&gt;只接收字节流的指令码!!!&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="RFID" scheme="http://happyxzp.com/tags/RFID/"/>
-    
-      <category term="Twisted" scheme="http://happyxzp.com/tags/Twisted/"/>
-    
-      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>使用virtualenvwrapper隔离python开发环境</title>
-    <link href="http://happyxzp.com/2016/05/10/py-virtualenv/"/>
-    <id>http://happyxzp.com/2016/05/10/py-virtualenv/</id>
-    <published>2016-05-10T04:29:47.530Z</published>
-    <updated>2016-05-10T04:29:47.528Z</updated>
-    
-    <content type="html">&lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;背景&lt;/strong&gt;：&lt;br&gt;作为一名pythoner，使用virtualenv来隔离开发环境我相信已经不用我再介绍是为什么了。而&lt;code&gt;virtualenvwrapper&lt;/code&gt;是&lt;code&gt;virtualenv&lt;/code&gt;的一个拓展，可以让我们更加方便的使用和管理多个&lt;code&gt;virtualenv&lt;/code&gt;实例，我们通过二者对比来学习一下。&lt;br&gt;使用virtualenv的一般流程是:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;创建虚拟环境: &lt;code&gt;virtualenv venv&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;激活虚拟环境: &lt;code&gt;source venv/bin/activate&lt;/code&gt;(windows下是直接&lt;code&gt;venv\Scripts\activate&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;安装依赖包: &lt;code&gt;pip install -r requirements.txt&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;退出虚拟环境: &lt;code&gt;deactive&lt;/code&gt;  &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
-原理也很简单，就是在激活了当前虚拟环境以后，&lt;code&gt;virtualenv&lt;/code&gt;会修改相关的环境变量，让命令&lt;code&gt;python&lt;/code&gt;和&lt;code&gt;pip&lt;/code&gt;均指向当前的&lt;code&gt;venv&lt;/code&gt;环境。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;接下来让我们看看virtualenvwrapper：&quot;&gt;接下来让我们看看virtualenvwrapper：&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;http://www.nowamagic.net/academy/tag/virtualenvwrapper&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;virtualenvwrapper&lt;/a&gt; 是一个建立在 &lt;code&gt;virtualenv&lt;/code&gt; 上的工具，通过它可以方便的创建/激活/管理/销毁虚拟环境。使得&lt;code&gt;virtualenv&lt;/code&gt;变得更加好用&lt;br&gt; 可以通过下面命令安装 &lt;code&gt;virtualenvwrapper&lt;/code&gt; 。&lt;br&gt;&lt;figure class=&quot;highlight cmake&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;pip &lt;span class=&quot;keyword&quot;&gt;install&lt;/span&gt; virtualenvwrapper&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;安装后，你需要配置它。下面是我的配置：&lt;br&gt;&lt;figure class=&quot;highlight xquery&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;export WORKON_HOME=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/.virtualenvs&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;export PROJECT_HOME=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/Devel&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;source &lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/.local/bin/virtualenvwrapper.sh&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;设置 &lt;code&gt;WORKON_HOME&lt;/code&gt; 和 &lt;code&gt;source $HOME/.local/bin/virtualenvwrapper.sh&lt;/code&gt; 只需要几行代码,这里我是安装了一个用户级别的virtualenvwrapper&lt;/p&gt;
-&lt;p&gt;将上面的配置添加到&lt;code&gt;~/.zshrc&lt;/code&gt;的末尾，然后将下面的命令运行一次(如果使用的&lt;code&gt;bash&lt;/code&gt;的话，是添加到&lt;code&gt;~/.bashrc&lt;/code&gt;)：&lt;br&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;source&lt;/span&gt; ~/.zshrc&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;接下来就是使用&lt;code&gt;virtualenvwrapper&lt;/code&gt;了！，来体会一下吧！&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;创建环境&lt;/li&gt;
-&lt;/ol&gt;
-&lt;figure class=&quot;highlight nginx&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;mkvirtualenv&lt;/span&gt; env1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;mkvirtualenv env2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;或者直接创建有依赖的环境:&lt;br&gt;&lt;figure class=&quot;highlight stylus&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;mkvirtualenv -r requirements&lt;span class=&quot;class&quot;&gt;.txt&lt;/span&gt; &amp;lt;env_name&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;环境创建之后，会自动进入该目录，并激活该环境。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;切换环境&lt;/p&gt;
-&lt;figure class=&quot;highlight nginx&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;workon&lt;/span&gt; env1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;workon env2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;列出已有环境&lt;/p&gt;
-&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;workon&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;查看当前环境已安装的 packages&lt;/p&gt;
-&lt;figure class=&quot;highlight crystal&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;variable&quot;&gt;$ &lt;/span&gt;lssitepackages&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;退出环境&lt;/p&gt;
-&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;deactivate&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;删除环境&lt;/p&gt;
-&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;rmvirtualenv&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;创建project&lt;br&gt;项目将创建到PROJECT_HOME目录下，实际上相当于在某个目录下，建了一个环境。&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;mkproject&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;背景&lt;/strong&gt;：&lt;br&gt;作为一名pythoner，使用virtualenv来隔离开发环境我相信已经不用我再介绍是为什么了。而&lt;code&gt;virtualenvwrapper&lt;/code&gt;是&lt;code&gt;virtualenv&lt;/code&gt;的一个拓展，可以让我们更加方便的使用和管理多个&lt;code&gt;virtualenv&lt;/code&gt;实例，我们通过二者对比来学习一下。&lt;br&gt;使用virtualenv的一般流程是:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;创建虚拟环境: &lt;code&gt;virtualenv venv&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;激活虚拟环境: &lt;code&gt;source venv/bin/activate&lt;/code&gt;(windows下是直接&lt;code&gt;venv\Scripts\activate&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;安装依赖包: &lt;code&gt;pip install -r requirements.txt&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;退出虚拟环境: &lt;code&gt;deactive&lt;/code&gt;
-    
-    </summary>
-    
-    
-      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>python中装饰器的深度剖析!</title>
-    <link href="http://happyxzp.com/2016/05/10/py-decorator/"/>
-    <id>http://happyxzp.com/2016/05/10/py-decorator/</id>
-    <published>2016-05-10T04:29:42.798Z</published>
-    <updated>2016-05-10T04:29:42.797Z</updated>
-    
-    <content type="html">&lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/p&gt;
-&lt;p&gt;自定义的修饰器.&lt;br&gt;一个不带参数的装饰器:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;@decorator&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;pass&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;上面这段代码就等于下面的实现:&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;fun = decorator(fun)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;而带有参数的装饰器:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;@decorator(&#39;Amrzs&#39;)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &lt;span class=&quot;keyword&quot;&gt;pass&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;这段代码就等于下面的实现:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;fun = decorator(&lt;span class=&quot;string&quot;&gt;&#39;Amrzs&#39;&lt;/span&gt;)(func)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;但是这个操作因为每次实现装饰器都要这样实现一遍的话太麻烦,所以python内置的&lt;code&gt;@&lt;/code&gt;语法给我们实现了这些功能.&lt;/p&gt;
-&lt;p&gt;又由于被&lt;code&gt;decorator&lt;/code&gt;装饰之后的函数，它们的&lt;code&gt;__name__&lt;/code&gt;已经从原来的&lt;code&gt;now&lt;/code&gt;变成了装饰器中的函数签名, 所以，需要把原始函数的&lt;code&gt;__name__&lt;/code&gt;等属性复制到&lt;code&gt;wrapper()&lt;/code&gt;函数中，否则，有些依赖函数签名的代码执行就会出错。&lt;/p&gt;
-&lt;p&gt;即需要编写&lt;code&gt;wrapper.__name__ = func.__name__&lt;/code&gt;这样的代码，但是Python内置的&lt;code&gt;functools.wraps&lt;/code&gt;函数已经帮我们做了这个事情. 所以，一个完整的&lt;code&gt;decorator&lt;/code&gt;的写法如下：&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; functools&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(func)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;    @functools.wraps(func) &lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;wrapper&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(*args, **kw)&lt;/span&gt;:&lt;/span&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        print(&lt;span class=&quot;string&quot;&gt;&#39;call %s():&#39;&lt;/span&gt; % func.__name__) &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; func(*args, **kw)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; wrapper&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;或者说带参数的:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; functools&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(text)&lt;/span&gt;:&lt;/span&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;decorator&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(func)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;        @functools.wraps(func)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;wrapper&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(*args, **kw)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             print(&lt;span class=&quot;string&quot;&gt;&#39;%s %s():&#39;&lt;/span&gt; % (text, func.__name__))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; func(*args, **kw) &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; wrapper&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; decorator&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;而有了上面的知识,再基于这个装饰器的&lt;code&gt;@&lt;/code&gt;原理就很容易实现一个更加具有特定功能的装饰器,比如我们现在有一个&lt;code&gt;@permission_required(permission)&lt;/code&gt;这样的装饰器.这个装饰器的功能是根据&lt;code&gt;permission&lt;/code&gt;参数来执行相应权限的操作.&lt;br&gt;现在我们来实现一个只允许管理员操作的装饰器:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;admin_required&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(func)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; permission_required(Permission.ADMINISTER)(func)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;原理很简单,其实就是内定了&lt;code&gt;permission_required()&lt;/code&gt;函数参数的值,默认为管理员权限,又因为这种结构符合python的&lt;code&gt;@&lt;/code&gt;语法糖,所以直接就可以用&lt;code&gt;@admin_required&lt;/code&gt;这样的方式来使用这个装饰器!&lt;/p&gt;
-&lt;p&gt;哈哈!&lt;/p&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/p&gt;
-&lt;p&gt;自定义的修饰器.&lt;br&gt;一个不带参数的装饰器:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;@decorator&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;pass&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;上面这段代码就等于下面的实现:&lt;br&gt;
-    
-    </summary>
-    
-    
-      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
+      <category term="Bootstrap" scheme="http://happyxzp.com/tags/Bootstrap/"/>
     
   </entry>
   
@@ -288,10 +84,10 @@ reactor.&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&
     <title>使用Python-Construct解析数据和生成协议</title>
     <link href="http://happyxzp.com/2016/05/10/py-construct/"/>
     <id>http://happyxzp.com/2016/05/10/py-construct/</id>
-    <published>2016-05-10T04:29:38.607Z</published>
-    <updated>2016-05-10T04:29:38.606Z</updated>
+    <published>2016-05-10T04:34:21.008Z</published>
+    <updated>2016-05-10T04:34:21.006Z</updated>
     
-    <content type="html">&lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/p&gt;
+    <content type="html">&lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在&lt;code&gt;Python&lt;/code&gt;中解析数据包有一个内置的&lt;code&gt;Struct&lt;/code&gt;库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)&lt;/p&gt;
 &lt;h2 id=&quot;construct的作用&quot;&gt;construct的作用&lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;&amp;#160; &amp;#160; &amp;#160; &amp;#160;Construct is a powerful declarative parser (and builder) for binary data.&lt;/p&gt;
@@ -494,7 +290,7 @@ reactor.&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&
     
     <summary type="html">
     
-      &lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;&amp;#160; &amp;#160; &amp;#160; &amp;#160;直接切入正题，我们知道在&lt;code&gt;Python&lt;/code&gt;中解析数据包有一个内置的&lt;code&gt;Struct&lt;/code&gt;库，但是那个库解析起来实在是笨拙，只关心数据的内容，而construct的解析会像字典那样把内容分门别类的展示出来，首先看一下connstruct的作用(这段摘自官方文档)&lt;/p&gt;
 &lt;h2 id=&quot;construct的作用&quot;&gt;construct的作用&lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;&amp;#160; &amp;#160; &amp;#160; &amp;#160;Construct is a powerful declarative parser (and builder) for binary data.&lt;/p&gt;
@@ -512,78 +308,14 @@ reactor.&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&
   </entry>
   
   <entry>
-    <title>几个漂亮的Bootstrap插件（已经视觉疲劳）</title>
-    <link href="http://happyxzp.com/2016/05/10/Bootstrap/"/>
-    <id>http://happyxzp.com/2016/05/10/Bootstrap/</id>
-    <published>2016-05-10T04:29:33.759Z</published>
-    <updated>2016-05-10T04:29:33.757Z</updated>
-    
-    <content type="html">&lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/p&gt;
-&lt;p&gt;前阵子自己用&lt;code&gt;jsp&lt;/code&gt;开发个人Blog，思来想去还是Bootstrap用着顺手了，顺便也整理了一些网上有关Bootstrap的一些漂亮插件分享给大家。&lt;br&gt;使用方法大同小异，下载下来然后指定标签的&lt;code&gt;class&lt;/code&gt;属性即可.&lt;br&gt;eg:&lt;br&gt;&lt;figure class=&quot;highlight scala&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;input &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;type&lt;/span&gt;=&lt;/span&gt;&lt;span class=&quot;string&quot;&gt;&quot;textarea&quot;&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;=&lt;/span&gt;&lt;span class=&quot;string&quot;&gt;&quot;wysihtml5&quot;&lt;/span&gt;/&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;h2 id=&quot;1-_可视化编辑器&quot;&gt;1. 可视化编辑器&lt;/h2&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;http://jhollingworth.github.io/bootstrap-wysihtml5/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;bootstrap-wysihtml5&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-d4e7b644aeb49330.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A Javascript plugin that makes it easy to create simple WYSIWYG editors&quot;&gt;&lt;br&gt;2.&lt;a href=&quot;http://hackerwins.github.io/summernote/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Summernote&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-27845387ee81b99d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A simple WYSIWYG editor for Bootstrap&quot;&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;##2. 日期选择器&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.eyecon.ro/bootstrap-datepicker/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Datepicker&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-f2ac69ded508650e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A plugin for adding a datepicker field to any element&quot;&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://weareoutman.github.io/clockpicker/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;ClockPicker&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-cf73cf4f99156295.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A unique clock-style timepicker for Bootstrap&quot;&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;3-数据分析生成器&quot;&gt;3.数据分析生成器&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.dangrossman.info/2012/08/20/a-date-range-picker-for-twitter-bootstrap/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Date Range Picker&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-7cd2441c5a609036.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;This date range picker component creates a drop-down from which you can select a range of dates Extending Bootstrap&quot;&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;4-对话框提示框&quot;&gt;4.对话框提示框&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;http://bootboxjs.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Bootbox.js&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-b976d07b137c61f4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;small JS library that allows you to create programmatic dialog boxes using Bootstraps modals&quot;&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;5-文件上传插件&quot;&gt;5.文件上传插件&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;http://blueimp.github.io/jQuery-File-Upload/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;jQuery File Upload&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-1bec32649ea6a15a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A file upload widget which features multiple file selection, drag &amp;amp; drop, progress bars&quot;&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;6-表单验证插件&quot;&gt;6.表单验证插件&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;http://bootstrapvalidator.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;BootstrapValidator&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-e5dd92a6bb67c123.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot; [API](http://bv.doc.javake.cn/api/)  A jQuery plugin for vaildating forms within Bootstrap&quot;&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://reactiveraven.github.io/jqBootstrapValidation/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;jqBootstrapValidation&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-411613694aa83fd0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;jqBootstrapValidation&amp;lt;/strong&amp;gt;&amp;lt;/a&amp;gt; – Another jQuery validation framework for Bootstrap”/&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;br /&amp;gt;&amp;lt;p&amp;gt;&amp;lt;a target=&quot;&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;7-相册插件&quot;&gt;7.相册插件&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;http://blueimp.github.io/Bootstrap-Image-Gallery/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Image Gallery&lt;/strong&gt;&lt;/a&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-7ddfe9f3120ec06b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;plugin shows images and videos in the modal dialog of the Bootstrap&quot;&gt;&lt;br&gt;2.&lt;a href=&quot;http://plugins.krajee.com/file-input&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt; Bootstrap File Input&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;https://camo.githubusercontent.com/187b76c156ed53e1e7c29266ee19b164be192ffe/68747470733a2f2f6c68332e676f6f676c6575736572636f6e74656e742e636f6d2f2d334669456d635f6f6b63342f5642775f64324c42414a492f4141414141414141414c382f4b62566a355839447573302f773539362d683435342d6e6f2f46696c65496e7075742e6a7067&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;img src=&quot;https://camo.githubusercontent.com/187b76c156ed53e1e7c29266ee19b164be192ffe/68747470733a2f2f6c68332e676f6f676c6575736572636f6e74656e742e636f6d2f2d334669456d635f6f6b63342f5642775f64324c42414a492f4141414141414141414c382f4b62566a355839447573302f773539362d683435342d6e6f2f46696c65496e7075742e6a7067&quot; alt=&quot;File Input Screenshot&quot;&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;8-文字编辑&quot;&gt;8.文字编辑&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;http://vitalets.github.io/x-editable/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;X-editable&lt;/strong&gt;&lt;/a&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-8e221d4026cf7bf5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A library that allows you to create editable elements on your Bootstrap page&quot;&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://toopay.github.io/bootstrap-markdown/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Bootstrap Markdown&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-b2c59e504440d111.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A plugin for enabling Markdown editing in Bootstrap&quot;&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;9-标签&quot;&gt;9.标签&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/maxwells/bootstrap-tags&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Bootstrap Tags&lt;/strong&gt;&lt;/a&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-b388c595a6298133.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;jQuery plugin for adding tagging functionality Bootstrap&quot;&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://sliptree.github.io/bootstrap-tokenfield/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Tokenfield&lt;/strong&gt;&lt;/a&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-e6f3d7d6ef8ba68a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;An advanced tagging jQuery plugin for Bootstrap&quot;&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;10-Website_Tour(新手指引！)&quot;&gt;10.Website Tour(新手指引！)&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;http://bootstraptour.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Bootstrap Tour&lt;/strong&gt;&lt;/a&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-18466845221c5ce3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A quick and easy way to build your product tours with Bootstrap Popovers&quot;&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://clu3.github.io/bootstro.js/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Bootstro.js&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-635e79aa5b27756f.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;Bootstro-js&quot;&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;11-按钮&quot;&gt;11.按钮&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;社交媒体按钮&lt;br&gt;&lt;a href=&quot;http://lipis.github.io/bootstrap-social/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;&lt;strong&gt;Social Buttons for Bootstrap&lt;/strong&gt;&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-e5f096b8eeebb5a5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;A pure CSS social sign-in button library for bootstrap&quot;&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;先就这么多了，以后遇到更好的再补充。&lt;/p&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/p&gt;
-&lt;p&gt;前阵子自己用&lt;code&gt;jsp&lt;/code&gt;开发个人Blog，思来想去还是Bootstrap用着顺手了，顺便也整理了一些网上有关Bootstrap的一些漂亮插件分享给大家。&lt;br&gt;使用方法大同小异，下载下来然后指定标签的&lt;code&gt;class&lt;/code&gt;属性即可.&lt;br&gt;eg:&lt;br&gt;&lt;figure class=&quot;highlight scala&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;input &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;type&lt;/span&gt;=&lt;/span&gt;&lt;span class=&quot;string&quot;&gt;&quot;textarea&quot;&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;=&lt;/span&gt;&lt;span class=&quot;string&quot;&gt;&quot;wysihtml5&quot;&lt;/span&gt;/&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;h2 id=&quot;1-_可视化编辑器&quot;&gt;1. 可视化编辑器&lt;/h2&gt;
-    
-    </summary>
-    
-    
-      <category term="Bootstrap" scheme="http://happyxzp.com/tags/Bootstrap/"/>
-    
-  </entry>
-  
-  <entry>
     <title>简书博客搬迁计划</title>
     <link href="http://happyxzp.com/2016/05/10/hello-world/"/>
     <id>http://happyxzp.com/2016/05/10/hello-world/</id>
-    <published>2016-05-10T01:02:49.804Z</published>
-    <updated>2016-05-10T01:02:49.802Z</updated>
+    <published>2016-05-10T04:34:14.608Z</published>
+    <updated>2016-05-10T04:34:14.606Z</updated>
     
-    <content type="html">&lt;p&gt;最近想把以前写过的简书上的Blog搬迁到自己的网站上&lt;br&gt;有关生活，有关工作。&lt;br&gt;XzAmrzs的意思是: 邢(X)志(z)鹏(Amrzs) 用Amrzs这个单词是因为它表示西方神鸟，中文又”鹏”&lt;/p&gt;
+    <content type="html">&lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;最近想把以前写过的简书上的Blog搬迁到自己的网站上&lt;br&gt;有关生活，有关工作。&lt;br&gt;XzAmrzs的意思是: 邢(X)志(z)鹏(Amrzs) 用Amrzs这个单词是因为它表示西方神鸟，中文又”鹏”&lt;/p&gt;
 &lt;p&gt;还有还有:&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;看见左边的那三个图标了吗？&lt;/p&gt;
@@ -606,13 +338,284 @@ reactor.&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&
     
     <summary type="html">
     
-      &lt;p&gt;最近想把以前写过的简书上的Blog搬迁到自己的网站上&lt;br&gt;有关生活，有关工作。&lt;br&gt;XzAmrzs的意思是: 邢(X)志(z)鹏(Amrzs) 用Amrzs这个单词是因为它表示西方神鸟，中文又”鹏”&lt;/p&gt;
+      &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;最近想把以前写过的简书上的Blog搬迁到自己的网站上&lt;br&gt;有关生活，有关工作。&lt;br&gt;XzAmrzs的意思是: 邢(X)志(z)鹏(Amrzs) 用Amrzs这个单词是因为它表示西方神鸟，中文又”鹏”&lt;/p&gt;
 &lt;p&gt;还有还有:&lt;br&gt;
     
     </summary>
     
     
       <category term="随笔" scheme="http://happyxzp.com/tags/%E9%9A%8F%E7%AC%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Twisted解析RFID数据传输整理</title>
+    <link href="http://happyxzp.com/2016/05/10/RFID-Twisted/"/>
+    <id>http://happyxzp.com/2016/05/10/RFID-Twisted/</id>
+    <published>2016-05-10T04:34:08.598Z</published>
+    <updated>2016-05-10T04:34:08.597Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&quot;一-_发送相关:&quot;&gt;一. 发送相关:&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;self.transport.write()&lt;/code&gt;函数只能发送&lt;strong&gt;字符串&lt;/strong&gt;类型的参数!!!&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;RFID&lt;/code&gt;只接收字节流的指令码!!!&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h3 id=&quot;所以:&quot;&gt;所以:&lt;/h3&gt;&lt;p&gt;(1). 可直接发送字节流的字符串表示&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;data = ‘\xff\xff\xf1\x07\x06\xf1’ &lt;code&gt;#类型是str,但打印出来是无法识别的字节码&lt;/code&gt;&lt;br&gt;self.transport.write(data)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;(2). 给参数赋值字符串指令码(此时并不是字节流所以要进行下一步)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;dataStr =’FF FF F1 06 06 F1’&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;然后用&lt;code&gt;bytearray.fromhex(dataStr)&lt;/code&gt;将&lt;strong&gt;字符串转换成字节流&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;byteData=bytearray.fromhex(dataStr)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;最后将&lt;strong&gt;字节流转换成字符串&lt;/strong&gt;进行发送&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;self.transport.write(str(bytedata))&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&quot;二-_接收相关&quot;&gt;二. 接收相关&lt;/h1&gt;&lt;ol&gt;
+&lt;li&gt;从RFID接收过来的数据是字节流的字符串表示(即&lt;code&gt;字节串&lt;/code&gt;,字节串其实就是字节流).类型是&lt;code&gt;str&lt;/code&gt;.&lt;code&gt;print&lt;/code&gt;出来是无法识别的字节码同&lt;code&gt;一中的(1)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;实践证明&lt;code&gt;datareceived&lt;/code&gt;对&lt;code&gt;RFID&lt;/code&gt;传过来的数据是&lt;strong&gt;一个字节一个字节&lt;/strong&gt;的进行接收的,这个函数宏观上只执行了一次,但是实际上有几个字节执行几次,一直到接受完毕为止.&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;对字节流数据进行解析(解包)的&lt;code&gt;construct&lt;/code&gt;函数,&lt;strong&gt;只接收字节串(字节流)参数&lt;/strong&gt;所以需要再转换成字节串才能进行解析&lt;/p&gt;
+&lt;h3 id=&quot;所以:-1&quot;&gt;所以:&lt;/h3&gt;&lt;p&gt;(1).先使用 &lt;code&gt;binascii.b2a_hex(data)&lt;/code&gt;或者&lt;code&gt;hexlify(data)&lt;/code&gt;.由函数意思&lt;strong&gt;binary to ascii&lt;/strong&gt;.作用是返回的二进制数据的十六进制表示.&lt;strong&gt;每一个字节的数据转换成相应的2位十六进制表示.&lt;/strong&gt;因此产生的字串是源数据两倍长度。&lt;code&gt;a2b_hex&lt;/code&gt;和&lt;code&gt;unhexlify&lt;/code&gt;则执行反向操作(所得仍然是字符串类型)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;self.data_list += binascii.b2a_hex(data) &lt;code&gt;#累加字符串,注意,字节串是不能直接进行加法的.&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;若是只进行串口的调试其实到这一步就算通了&lt;/strong&gt;&lt;br&gt;(2). 对(1)中转化成的字符串再次转化成字节流&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;byteData = bytearray.fromhex(self.data_list) &lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;(3). 对字节流中的数据进行解包处理.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;pkgs, leftovers = self.rfid.parse_pkgs(byteData)  &lt;code&gt;# 解析字节流转化为可识别的指令码存在pkgs(一个列表),剩下的存在leftovers&lt;/code&gt;&lt;br&gt;if len(pkgs) != 0 and len(leftovers) == 0:  &lt;code&gt;对数据包的正确性进行判断&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;(4). 处理数据&lt;br&gt;调用handlDatas函数.从返回的列表中取有用的数据&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&quot;一-_发送相关:&quot;&gt;一. 发送相关:&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;self.transport.write()&lt;/code&gt;函数只能发送&lt;strong&gt;字符串&lt;/strong&gt;类型的参数!!!&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;RFID&lt;/code&gt;只接收字节流的指令码!!!&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="RFID" scheme="http://happyxzp.com/tags/RFID/"/>
+    
+      <category term="Twisted" scheme="http://happyxzp.com/tags/Twisted/"/>
+    
+      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>python中装饰器的深度剖析!</title>
+    <link href="http://happyxzp.com/2016/05/10/py-decorator/"/>
+    <id>http://happyxzp.com/2016/05/10/py-decorator/</id>
+    <published>2016-05-10T04:34:04.182Z</published>
+    <updated>2016-05-10T04:34:04.180Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;自定义的修饰器.&lt;br&gt;一个不带参数的装饰器:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;@decorator&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;pass&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;上面这段代码就等于下面的实现:&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;fun = decorator(fun)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;而带有参数的装饰器:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;@decorator(&#39;Amrzs&#39;)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     &lt;span class=&quot;keyword&quot;&gt;pass&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;这段代码就等于下面的实现:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;fun = decorator(&lt;span class=&quot;string&quot;&gt;&#39;Amrzs&#39;&lt;/span&gt;)(func)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;但是这个操作因为每次实现装饰器都要这样实现一遍的话太麻烦,所以python内置的&lt;code&gt;@&lt;/code&gt;语法给我们实现了这些功能.&lt;/p&gt;
+&lt;p&gt;又由于被&lt;code&gt;decorator&lt;/code&gt;装饰之后的函数，它们的&lt;code&gt;__name__&lt;/code&gt;已经从原来的&lt;code&gt;now&lt;/code&gt;变成了装饰器中的函数签名, 所以，需要把原始函数的&lt;code&gt;__name__&lt;/code&gt;等属性复制到&lt;code&gt;wrapper()&lt;/code&gt;函数中，否则，有些依赖函数签名的代码执行就会出错。&lt;/p&gt;
+&lt;p&gt;即需要编写&lt;code&gt;wrapper.__name__ = func.__name__&lt;/code&gt;这样的代码，但是Python内置的&lt;code&gt;functools.wraps&lt;/code&gt;函数已经帮我们做了这个事情. 所以，一个完整的&lt;code&gt;decorator&lt;/code&gt;的写法如下：&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; functools&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(func)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;    @functools.wraps(func) &lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;wrapper&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(*args, **kw)&lt;/span&gt;:&lt;/span&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        print(&lt;span class=&quot;string&quot;&gt;&#39;call %s():&#39;&lt;/span&gt; % func.__name__) &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; func(*args, **kw)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; wrapper&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;或者说带参数的:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; functools&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(text)&lt;/span&gt;:&lt;/span&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;decorator&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(func)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;        @functools.wraps(func)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;wrapper&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(*args, **kw)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             print(&lt;span class=&quot;string&quot;&gt;&#39;%s %s():&#39;&lt;/span&gt; % (text, func.__name__))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;             &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; func(*args, **kw) &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; wrapper&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; decorator&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;而有了上面的知识,再基于这个装饰器的&lt;code&gt;@&lt;/code&gt;原理就很容易实现一个更加具有特定功能的装饰器,比如我们现在有一个&lt;code&gt;@permission_required(permission)&lt;/code&gt;这样的装饰器.这个装饰器的功能是根据&lt;code&gt;permission&lt;/code&gt;参数来执行相应权限的操作.&lt;br&gt;现在我们来实现一个只允许管理员操作的装饰器:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;admin_required&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(func)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; permission_required(Permission.ADMINISTER)(func)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;原理很简单,其实就是内定了&lt;code&gt;permission_required()&lt;/code&gt;函数参数的值,默认为管理员权限,又因为这种结构符合python的&lt;code&gt;@&lt;/code&gt;语法糖,所以直接就可以用&lt;code&gt;@admin_required&lt;/code&gt;这样的方式来使用这个装饰器!&lt;/p&gt;
+&lt;p&gt;哈哈!&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;自定义的修饰器.&lt;br&gt;一个不带参数的装饰器:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;@decorator&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;pass&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;上面这段代码就等于下面的实现:&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用virtualenvwrapper隔离python开发环境</title>
+    <link href="http://happyxzp.com/2016/05/10/py-virtualenv/"/>
+    <id>http://happyxzp.com/2016/05/10/py-virtualenv/</id>
+    <published>2016-05-10T04:33:59.871Z</published>
+    <updated>2016-05-10T04:33:59.869Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;背景&lt;/strong&gt;：&lt;br&gt;作为一名pythoner，使用virtualenv来隔离开发环境我相信已经不用我再介绍是为什么了。而&lt;code&gt;virtualenvwrapper&lt;/code&gt;是&lt;code&gt;virtualenv&lt;/code&gt;的一个拓展，可以让我们更加方便的使用和管理多个&lt;code&gt;virtualenv&lt;/code&gt;实例，我们通过二者对比来学习一下。&lt;br&gt;使用virtualenv的一般流程是:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;创建虚拟环境: &lt;code&gt;virtualenv venv&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;激活虚拟环境: &lt;code&gt;source venv/bin/activate&lt;/code&gt;(windows下是直接&lt;code&gt;venv\Scripts\activate&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;安装依赖包: &lt;code&gt;pip install -r requirements.txt&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;退出虚拟环境: &lt;code&gt;deactive&lt;/code&gt;  &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+原理也很简单，就是在激活了当前虚拟环境以后，&lt;code&gt;virtualenv&lt;/code&gt;会修改相关的环境变量，让命令&lt;code&gt;python&lt;/code&gt;和&lt;code&gt;pip&lt;/code&gt;均指向当前的&lt;code&gt;venv&lt;/code&gt;环境。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;接下来让我们看看virtualenvwrapper：&quot;&gt;接下来让我们看看virtualenvwrapper：&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;http://www.nowamagic.net/academy/tag/virtualenvwrapper&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;virtualenvwrapper&lt;/a&gt; 是一个建立在 &lt;code&gt;virtualenv&lt;/code&gt; 上的工具，通过它可以方便的创建/激活/管理/销毁虚拟环境。使得&lt;code&gt;virtualenv&lt;/code&gt;变得更加好用&lt;br&gt; 可以通过下面命令安装 &lt;code&gt;virtualenvwrapper&lt;/code&gt; 。&lt;br&gt;&lt;figure class=&quot;highlight cmake&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;pip &lt;span class=&quot;keyword&quot;&gt;install&lt;/span&gt; virtualenvwrapper&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;安装后，你需要配置它。下面是我的配置：&lt;br&gt;&lt;figure class=&quot;highlight xquery&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;export WORKON_HOME=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/.virtualenvs&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;export PROJECT_HOME=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/Devel&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;source &lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/.local/bin/virtualenvwrapper.sh&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;设置 &lt;code&gt;WORKON_HOME&lt;/code&gt; 和 &lt;code&gt;source $HOME/.local/bin/virtualenvwrapper.sh&lt;/code&gt; 只需要几行代码,这里我是安装了一个用户级别的virtualenvwrapper&lt;/p&gt;
+&lt;p&gt;将上面的配置添加到&lt;code&gt;~/.zshrc&lt;/code&gt;的末尾，然后将下面的命令运行一次(如果使用的&lt;code&gt;bash&lt;/code&gt;的话，是添加到&lt;code&gt;~/.bashrc&lt;/code&gt;)：&lt;br&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;source&lt;/span&gt; ~/.zshrc&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;接下来就是使用&lt;code&gt;virtualenvwrapper&lt;/code&gt;了！，来体会一下吧！&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;创建环境&lt;/li&gt;
+&lt;/ol&gt;
+&lt;figure class=&quot;highlight nginx&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;mkvirtualenv&lt;/span&gt; env1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;mkvirtualenv env2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;或者直接创建有依赖的环境:&lt;br&gt;&lt;figure class=&quot;highlight stylus&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;mkvirtualenv -r requirements&lt;span class=&quot;class&quot;&gt;.txt&lt;/span&gt; &amp;lt;env_name&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;环境创建之后，会自动进入该目录，并激活该环境。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;切换环境&lt;/p&gt;
+&lt;figure class=&quot;highlight nginx&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;workon&lt;/span&gt; env1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;workon env2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;列出已有环境&lt;/p&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;workon&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;查看当前环境已安装的 packages&lt;/p&gt;
+&lt;figure class=&quot;highlight crystal&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;variable&quot;&gt;$ &lt;/span&gt;lssitepackages&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;退出环境&lt;/p&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;deactivate&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;删除环境&lt;/p&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;rmvirtualenv&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;创建project&lt;br&gt;项目将创建到PROJECT_HOME目录下，实际上相当于在某个目录下，建了一个环境。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;mkproject&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;背景&lt;/strong&gt;：&lt;br&gt;作为一名pythoner，使用virtualenv来隔离开发环境我相信已经不用我再介绍是为什么了。而&lt;code&gt;virtualenvwrapper&lt;/code&gt;是&lt;code&gt;virtualenv&lt;/code&gt;的一个拓展，可以让我们更加方便的使用和管理多个&lt;code&gt;virtualenv&lt;/code&gt;实例，我们通过二者对比来学习一下。&lt;br&gt;使用virtualenv的一般流程是:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;创建虚拟环境: &lt;code&gt;virtualenv venv&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;激活虚拟环境: &lt;code&gt;source venv/bin/activate&lt;/code&gt;(windows下是直接&lt;code&gt;venv\Scripts\activate&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;安装依赖包: &lt;code&gt;pip install -r requirements.txt&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;退出虚拟环境: &lt;code&gt;deactive&lt;/code&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Twisted实例教程(一)</title>
+    <link href="http://happyxzp.com/2016/05/10/Twisted/"/>
+    <id>http://happyxzp.com/2016/05/10/Twisted/</id>
+    <published>2016-05-10T04:33:47.535Z</published>
+    <updated>2016-05-10T04:33:47.533Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;本文章通过实际例子和用Twisted实现一个类似&lt;code&gt;QQ&lt;/code&gt;那样的聊天室来逐步学习&lt;code&gt;Twisted&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&quot;一、稍微来点基础&quot;&gt;一、稍微来点基础&lt;/h2&gt;&lt;p&gt;首先,我们要明确一个概念,&lt;code&gt;Twisted&lt;/code&gt;是一个完全事件驱动的网络框架.它允许你使用和开发完全异步的网络应用程序和协议.&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;br&gt;&lt;code&gt;Twisted&lt;/code&gt;常用函数:&lt;br&gt;&lt;code&gt;connectionMade()&lt;/code&gt;:函数:这个函数在客户端&lt;strong&gt;成功连接&lt;/strong&gt;的时候被调用,即&lt;strong&gt;仅仅在连接成功的时候会调用一次&lt;/strong&gt;&lt;br&gt;&lt;code&gt;dataReceived()&lt;/code&gt;:函数:这个函数在客户端通过网络发送数据过来的时候被调用.&lt;code&gt;reactor&lt;/code&gt;把数据当成参数传到这个函数中,这样我们就不用自己去解析数据了&lt;br&gt;&lt;code&gt;self.transport&lt;/code&gt;:一个Twisted的&lt;code&gt;transport&lt;/code&gt;代表一个可以收发字节的单条连接.例如&lt;code&gt;ChatProtocol&lt;/code&gt;的服务器它的此属性为&lt;code&gt;&amp;lt;ChatProtocol #0 on 8123&amp;gt;&lt;/code&gt;&lt;br&gt;&lt;code&gt;self.transport.loseConnection():&lt;/code&gt;断掉与服务器之间的连接&lt;br&gt;&lt;code&gt;self.transport.getPeer&lt;/code&gt;:获得主机(服务器)信息例如:&lt;code&gt;IPv4Address(TCP, &amp;#39;127.0.0.1&amp;#39;, 35836)&lt;/code&gt;依次是 &lt;strong&gt;协议,IP地址,服务器端口号&lt;/strong&gt;&lt;br&gt;&lt;code&gt;self.transport.getPeer().host&lt;/code&gt;:获得主机信息的&lt;code&gt;IP地址&lt;/code&gt;&lt;br&gt;&lt;code&gt;self.transport.client&lt;/code&gt;属性:是一个元组,其中包含了客户端的地址(IP,端口)例如:&lt;code&gt;(&amp;#39;127.0.0.1&amp;#39;,35753)&lt;/code&gt;&lt;br&gt;&lt;code&gt;protocol.Factory()&lt;/code&gt;:它被称为&lt;strong&gt;工厂&lt;/strong&gt;,每次连接进来的时候,它都会”生产”一个我们的&lt;code&gt;protocol&lt;/code&gt;对象.然后在&lt;code&gt;reactor&lt;/code&gt;中安装一个TCP监听器以等待服务请求.当有请求进来时,创建一个DemoProtocol实例来服务那个客户端.&lt;br&gt;具体的一个小例子如下:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;# coding=utf-8&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet.protocol &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; Protocol, Factory
+&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; reactor
+
+PORT = &lt;span class=&quot;number&quot;&gt;21567&lt;/span&gt;
+
+&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;EchoProtocol&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Protocol)&lt;/span&gt;:&lt;/span&gt;
+    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;connectionMade&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self)&lt;/span&gt;:&lt;/span&gt;
+        &lt;span class=&quot;keyword&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;Got connection from&#39;&lt;/span&gt;, self.transport.client
+    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;connectionLost&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, reason)&lt;/span&gt;:&lt;/span&gt;
+        &lt;span class=&quot;keyword&quot;&gt;print&lt;/span&gt; self.transport.client, &lt;span class=&quot;string&quot;&gt;&#39;disconnected&#39;&lt;/span&gt;
+    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;dataReceived&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, data)&lt;/span&gt;:&lt;/span&gt;
+        &lt;span class=&quot;keyword&quot;&gt;print&lt;/span&gt; self.transport.write(data)
+
+factory = Factory()&lt;span class=&quot;comment&quot;&gt;# 实例化Factory&lt;/span&gt;
+factory.protocol = EchoProtocol  &lt;span class=&quot;comment&quot;&gt;# 设置factory的protocol属性以便它知道使用哪个protocol与客户端通信(这就是所谓的你的自定义protocol)&lt;/span&gt;
+
+reactor.listenTCP(PORT, factory)
+reactor.run()
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;对于客户端部分,需要注意的是:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;class &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;EchoClientFactory&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(protocol.clientFactory)&lt;/span&gt;&lt;/span&gt;:
+    protocol = EchoClientProtocol
+    clientConnectionLost = clientConnectionFaild= \ 
+       lambda self,connector,reason:reactor.&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;
+reactor.&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;connectTCP&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(HOST,PORT,EchoClientFactory()&lt;/span&gt;&lt;/span&gt;)
+reactor.&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;脚本的最后一部分是创建一个客户端工厂,连接到服务器,然后运行&lt;code&gt;reactor&lt;/code&gt;.注意,我们在这里实例化了客户端工厂,而不是像在服务器里那样把它传到&lt;code&gt;reactor&lt;/code&gt;中.这是因为,我们不是等待客户端连接的服务器,服务器在有连接时要为每个连接创建一个新的&lt;code&gt;protocol&lt;/code&gt;对象.我们只是一个客户端,所以我们只要创建一个&lt;code&gt;protocol&lt;/code&gt;对象,连接到服务器,服务器的工厂会创建一个&lt;code&gt;protocol&lt;/code&gt;对象来与我们对话&lt;/p&gt;
+&lt;h2 id=&quot;二、提升效率的_defferred&quot;&gt;二、提升效率的 defferred&lt;/h2&gt;&lt;p&gt;Twisted 官方称，“Twisted is event-based, asynchronous framework ”。&lt;br&gt;这个“异步”功能的代表就是 defferred。 defferred 的作用类似于“多线程”，负责保障多头连接、多项任务的异步执行。&lt;br&gt; 当然，defferred “异步”功能的实现，与多线程完全不同，具有以下特点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;defferred 产生的 event，是函数调用返回的对象；&lt;/li&gt;
+&lt;li&gt;defferred 代表一个连接任务，负责报告任务执行的延迟情况和最终结果；&lt;/li&gt;
+&lt;li&gt;对defferred 的操作，通过预定的“事件响应器”（event handler）进行。 有了defferred，即可对任务的执行进行管理控制。防止程序的运行，由于等待某项任务的完成而陷入阻塞停滞，提高整体运行的效率。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;请看下面的例子： 建议只关注&lt;strong&gt;黑体字&lt;/strong&gt;的语句，它们反映了defferred的用法。&lt;br&gt;涉及的两个class，是Twisted建立网络连接的固定套路，后面会专门说它。 &lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;comment&quot;&gt;# connectiontest.py&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; reactor, defer,protocol 
+
+&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;CallbackAndDisconnectProtocol&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(protocol.Protocol)&lt;/span&gt;:&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;# Twisted建立网络连接的固定套路&lt;/span&gt;
+    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;connectionMade&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self)&lt;/span&gt;:&lt;/span&gt; 
+        self.factory.deferred.callback(&lt;span class=&quot;string&quot;&gt;&quot;Connected!&quot;&lt;/span&gt;)&lt;span class=&quot;comment&quot;&gt;# “事件响应器”handleSuccess对此事件作出处理&lt;/span&gt;
+        self.transport.loseConnection( )
+
+&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ConnectionTestFactory&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(protocol.ClientFactory)&lt;/span&gt;:&lt;/span&gt; 
+&lt;span class=&quot;comment&quot;&gt;# Twisted建立网络连接的固定套路 &lt;/span&gt;
+    protocol = CallbackAndDisconnectProtocol
+
+    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self)&lt;/span&gt;:&lt;/span&gt; 
+        self.deferred = defer.Deferred( )&lt;span class=&quot;comment&quot;&gt;# 报告发生了延迟事件，防止程序阻塞在这个任务上&lt;/span&gt;
+
+    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;clientConnectionFailed&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, connector, reason)&lt;/span&gt;:&lt;/span&gt;
+         self.deferred.errback(reason) &lt;span class=&quot;comment&quot;&gt;# “事件响应器”handleFailure对此事件作出处理&lt;/span&gt;
+
+    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;testConnect&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(host, port)&lt;/span&gt;:&lt;/span&gt;
+         testFactory = ConnectionTestFactory( ) 
+         reactor.connectTCP(host, port, testFactory)
+         &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; testFactory.deferred &lt;span class=&quot;comment&quot;&gt;# 返回连接任务的deferred &lt;/span&gt;
+
+    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;handleSuccess&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(result, port)&lt;/span&gt;:&lt;/span&gt;&lt;span class=&quot;comment&quot;&gt;# deferred“事件响应器”：连接任务完成的处理 &lt;/span&gt;
+        &lt;span class=&quot;keyword&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;Connected to port %i&quot;&lt;/span&gt; % port reactor.stop( ) 
+
+    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;handleFailure&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(failure, port)&lt;/span&gt;:&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;# deferred“事件响应器”：连接任务失败的处理 print &quot;Error connecting to port %i: %s&quot; % ( port, failure.getErrorMessage( )) reactor.stop( ) if __name__ == &quot;__main__&quot;: import sys if not len(sys.argv) == 3: print &quot;Usage: connectiontest.py host port&quot; sys.exit(1) host = sys.argv[1] port = int(sys.argv[2]) **connecting = testConnect(host, port)** # 调用函数，返回deferred **connecting.addCallback(handleSuccess, port)** # 建立deferred“事件响应器” **connecting.addErrback(handleFailure, port)** # 建立deferred“事件响应器” reactor.run( ) &lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&quot;三、创建_client_的套路&quot;&gt;三、创建 client 的套路&lt;/h2&gt;&lt;p&gt;第二节说到的两个类，是ＴＣＰ协议客户端的创建套路（方式）。这个套路拆解如下： &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;定义“工厂”和“协议”两个类：&lt;br&gt;(1).  “协议”类是CallbackAndDisconnectProtocol，“工厂”类是 ConnectionTestFactory 类的名字不重要，但必须正确说明所继承的父类：&lt;br&gt;&lt;strong&gt;class CallbackAndDisconnectProtocol(protocol.Protocol)&lt;/strong&gt;&lt;br&gt;&lt;strong&gt;class ConnectionTestFactory(protocol.ClientFactory) &lt;/strong&gt;&lt;br&gt;(2). “协议”类是“工厂”类实例化的：&lt;br&gt;&lt;strong&gt;protocol = CallbackAndDisconnectProtocol；&lt;/strong&gt;&lt;br&gt;(3).只在“工厂”类中有 &lt;strong&gt;init&lt;/strong&gt;　函数，并在其中实例化一个deferred 对象：&lt;br&gt;&lt;strong&gt; self.deferred = defer.Deferred( ) &lt;/strong&gt;&lt;br&gt;(4)在“工厂”类中，重设父类函数 &lt;code&gt;clientConnectionFailed&lt;/code&gt;，通过&lt;code&gt;deferred&lt;/code&gt;引发事件，报告连接失败：&lt;br&gt;&lt;strong&gt; self.deferred.errback(reason)&lt;/strong&gt;&lt;br&gt;(5)在“协议”类中，重设父类函数 &lt;code&gt;connectionMade&lt;/code&gt;，由对象&lt;code&gt;factory&lt;/code&gt;引用“工厂”类中的deferred，经其引发事件，报告连接正常：&lt;br&gt;&lt;code&gt;self.factory.deferred.callback(&amp;quot;Connected!&amp;quot;)&lt;/code&gt;&lt;br&gt;并由对象transport引发事件，报告连接断开：&lt;br&gt;&lt;code&gt;self.transport.loseConnection( )；&lt;/code&gt;&lt;br&gt;上述“对象”，都是从各自父类继承来的。 &lt;/li&gt;
+&lt;li&gt;在函数&lt;code&gt;testConnect(host, port)&lt;/code&gt;中，&lt;br&gt;(1).将“工厂”类实例化：&lt;br&gt;&lt;code&gt;testFactory = ConnectionTestFactory( )&lt;/code&gt;&lt;br&gt;(2).由全局循环“主持人”&lt;code&gt;reactor&lt;/code&gt;建立以&lt;code&gt;testFactory为&lt;/code&gt;“主演”的ＴＣＰ连接：&lt;br&gt;&lt;code&gt;reactor.connectTCP(host, port, testFactory)&lt;/code&gt;&lt;br&gt;(3)返回deferred对象：&lt;br&gt;&lt;code&gt;return testFactory.deferred&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;至此，一个以事件驱动为基础、异步执行任务的框架程序搭成了。 上述三节的内容，据 Twisted 官方说，是“学习曲线最陡”的部分（They represent the steepest part of the Twisted learning curve.）。&lt;br&gt; 我的感受，造成“最陡”的原因，是由于套路新颖独特，初学乍练不易适应。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;框架对象众多，一时记不牢；&lt;/li&gt;
+&lt;li&gt;对象之间的关系比较复杂，一时理不清；&lt;/li&gt;
+&lt;li&gt;“事件驱动”这种模式，反映在程序文本中，有时见不到明显的函数调用，让人觉得程序的去向不明；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;另外，学习方法很重要。如果以学“语言”的习惯来学框架，遇上问题寻根究底，过分追求“水落石出”；或者，依赖教科书、畸重“理论”，忽视 examples 语句、结构和ＡＰＩ文档的分析研究，都不利于翻越这段陡坡&lt;/strong&gt;.我的体验，集中精力地啃嚼主干骨架，不纠緾于细枝末节，这段最陡的上坡路，顶多爬个十天八天的，就能越过去。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;本文章通过实际例子和用Twisted实现一个类似&lt;code&gt;QQ&lt;/code&gt;那样的聊天室来逐步学习&lt;code&gt;Twisted&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&quot;一、稍微来点基础&quot;&gt;一、稍微来点基础&lt;/h2&gt;&lt;p&gt;首先,我们要明确一个概念,&lt;code&gt;Twisted&lt;/code&gt;是一个完全事件驱动的网络框架.它允许你使用和开发完全异步的网络应用程序和协议.&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="Twisted" scheme="http://happyxzp.com/tags/Twisted/"/>
+    
+      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
     
   </entry>
   
