@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://happyxzp.com/2016/05/23/%E4%BD%BF%E7%94%A8Sockjs-Twisted%E5%AE%9E%E7%8E%B0%E7%9A%84WebSocket%E6%9C%8D%E5%8A%A1%E5%99%A8/</loc>
+    
+    <lastmod>2016-05-23T04:19:18.119Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://happyxzp.com/2016/05/10/Bootstrap/</loc>
     
     <lastmod>2016-05-10T04:34:53.206Z</lastmod>
@@ -23,7 +30,7 @@
   </url>
   
   <url>
-    <loc>http://happyxzp.com/2016/05/10/RFID-Twisted/</loc>
+    <loc>http://happyxzp.com/2016/05/23/RFID-Twisted/</loc>
     
     <lastmod>2016-05-10T04:34:08.597Z</lastmod>
     
@@ -37,7 +44,7 @@
   </url>
   
   <url>
-    <loc>http://happyxzp.com/2016/05/10/py-virtualenv/</loc>
+    <loc>http://happyxzp.com/2016/05/23/py-virtualenv/</loc>
     
     <lastmod>2016-05-10T04:33:59.869Z</lastmod>
     

@@ -116,7 +116,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/Bootstrap/" style="font-size: 10px;">Bootstrap</a> <a href="/tags/RFID/" style="font-size: 10px;">RFID</a> <a href="/tags/Twisted/" style="font-size: 15px;">Twisted</a> <a href="/tags/construct/" style="font-size: 10px;">construct</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+						<a href="/tags/Bootstrap/" style="font-size: 10px;">Bootstrap</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/RFID/" style="font-size: 10px;">RFID</a> <a href="/tags/Twisted/" style="font-size: 15px;">Twisted</a> <a href="/tags/construct/" style="font-size: 10px;">construct</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/websocket/" style="font-size: 10px;">websocket</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
 					</div>
 				</section>
 				
@@ -197,6 +197,194 @@
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-使用Sockjs-Twisted实现的WebSocket服务器" class="article article-type-post" itemscope
+         itemprop="blogPost">
+    
+    <div class="article-meta">
+        <a href="/2016/05/23/使用Sockjs-Twisted实现的WebSocket服务器/" class="article-date">
+  	<time datetime="2016-05-23T04:19:18.119Z" itemprop="datePublished">2016-05-23</time>
+</a>
+    </div>
+    
+    <div class="article-inner">
+        
+        <input type="hidden" class="isFancy"/>
+        
+        
+        <header class="article-header">
+            
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/23/使用Sockjs-Twisted实现的WebSocket服务器/">使用Sockjs-Twisted实现的WebSocket服务器</a>
+    </h1>
+  
+
+        </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+            <p><strong>本博客采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</strong></p>
+<blockquote>
+<p>SockJS 是一个浏览器上运行的 JavaScript 库，如果浏览器不支持 WebSocket，该库可以模拟对 WebSocket 的支持，实现浏览器和 Web 服务器之间低延迟、全双工、跨域的通讯通道。</p>
+</blockquote>
+<p>首先先说一下自己使用该库的场景——需要做一个类似<code>网页版的串口调试助手</code>这样的一个工具.即需要对串口收上来的数据即时传输到浏览器，从而使得web端进行数据的实时展示.而且前台是可以进行串口的设置，也可以在网页端发送数据给串口，实现全双工通信.</p>
+<p>具体的一部分功能如下图所示:<br>
+            
+        </div>
+        
+        <div class="article-info article-info-index">
+            
+            
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Flask/">Flask</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Twisted/">Twisted</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/websocket/">websocket</a></li></ul>
+	</div>
+
+            
+
+            
+            <p class="article-more-link">
+                <a 
+                   href="/2016/05/23/使用Sockjs-Twisted实现的WebSocket服务器/#more">more >></a>
+            </p>
+            
+            <div class="clearfix"></div>
+        </div>
+        
+    </div>
+    
+</article>
+
+
+
+
+
+  
+    <article id="post-RFID-Twisted" class="article article-type-post" itemscope
+         itemprop="blogPost">
+    
+    <div class="article-meta">
+        <a href="/2016/05/23/RFID-Twisted/" class="article-date">
+  	<time datetime="2016-05-23T04:15:26.528Z" itemprop="datePublished">2016-05-23</time>
+</a>
+    </div>
+    
+    <div class="article-inner">
+        
+        <input type="hidden" class="isFancy"/>
+        
+        
+        <header class="article-header">
+            
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/23/RFID-Twisted/">Twisted解析RFID数据传输整理</a>
+    </h1>
+  
+
+        </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+            <p><strong>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</strong></p>
+<h2 id="一-_发送相关:">一. 发送相关:</h2><ol>
+<li><code>self.transport.write()</code>函数只能发送<strong>字符串</strong>类型的参数!!!</li>
+<li><p><code>RFID</code>只接收字节流的指令码!!!</p>
+            
+        </div>
+        
+        <div class="article-info article-info-index">
+            
+            
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RFID/">RFID</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Twisted/">Twisted</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+	</div>
+
+            
+
+            
+            <p class="article-more-link">
+                <a 
+                   href="/2016/05/23/RFID-Twisted/#more">more >></a>
+            </p>
+            
+            <div class="clearfix"></div>
+        </div>
+        
+    </div>
+    
+</article>
+
+
+
+
+
+  
+    <article id="post-py-virtualenv" class="article article-type-post" itemscope
+         itemprop="blogPost">
+    
+    <div class="article-meta">
+        <a href="/2016/05/23/py-virtualenv/" class="article-date">
+  	<time datetime="2016-05-23T04:14:24.752Z" itemprop="datePublished">2016-05-23</time>
+</a>
+    </div>
+    
+    <div class="article-inner">
+        
+        <input type="hidden" class="isFancy"/>
+        
+        
+        <header class="article-header">
+            
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/23/py-virtualenv/">使用virtualenvwrapper隔离python开发环境</a>
+    </h1>
+  
+
+        </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+            <p><strong>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</strong></p>
+<p><strong>背景</strong>：<br>作为一名pythoner，使用virtualenv来隔离开发环境我相信已经不用我再介绍是为什么了。而<code>virtualenvwrapper</code>是<code>virtualenv</code>的一个拓展，可以让我们更加方便的使用和管理多个<code>virtualenv</code>实例，我们通过二者对比来学习一下。<br>使用virtualenv的一般流程是:</p>
+<ol>
+<li>创建虚拟环境: <code>virtualenv venv</code></li>
+<li>激活虚拟环境: <code>source venv/bin/activate</code>(windows下是直接<code>venv\Scripts\activate</code>)</li>
+<li>安装依赖包: <code>pip install -r requirements.txt</code></li>
+<li>退出虚拟环境: <code>deactive</code>
+            
+        </div>
+        
+        <div class="article-info article-info-index">
+            
+            
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+	</div>
+
+            
+
+            
+            <p class="article-more-link">
+                <a 
+                   href="/2016/05/23/py-virtualenv/#more">more >></a>
+            </p>
+            
+            <div class="clearfix"></div>
+        </div>
+        
+    </div>
+    
+</article>
+
+
+
+
+
   
     <article id="post-Bootstrap" class="article article-type-post" itemscope
          itemprop="blogPost">
@@ -308,187 +496,6 @@
             <p class="article-more-link">
                 <a 
                    href="/2016/05/10/py-construct/#more">more >></a>
-            </p>
-            
-            <div class="clearfix"></div>
-        </div>
-        
-    </div>
-    
-</article>
-
-
-
-
-
-  
-    <article id="post-hello-world" class="article article-type-post" itemscope
-         itemprop="blogPost">
-    
-    <div class="article-meta">
-        <a href="/2016/05/10/hello-world/" class="article-date">
-  	<time datetime="2016-05-10T04:34:14.608Z" itemprop="datePublished">2016-05-10</time>
-</a>
-    </div>
-    
-    <div class="article-inner">
-        
-        <input type="hidden" class="isFancy"/>
-        
-        
-        <header class="article-header">
-            
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/10/hello-world/">简书博客搬迁计划</a>
-    </h1>
-  
-
-        </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-            
-            <p><strong>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</strong></p>
-<p>最近想把以前写过的简书上的Blog搬迁到自己的网站上<br>有关生活，有关工作。<br>XzAmrzs的意思是: 邢(X)志(z)鹏(Amrzs) 用Amrzs这个单词是因为它表示西方神鸟，中文又”鹏”</p>
-<p>还有还有:<br>
-            
-        </div>
-        
-        <div class="article-info article-info-index">
-            
-            
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
-	</div>
-
-            
-
-            
-            <p class="article-more-link">
-                <a 
-                   href="/2016/05/10/hello-world/#more">more >></a>
-            </p>
-            
-            <div class="clearfix"></div>
-        </div>
-        
-    </div>
-    
-</article>
-
-
-
-
-
-  
-    <article id="post-RFID-Twisted" class="article article-type-post" itemscope
-         itemprop="blogPost">
-    
-    <div class="article-meta">
-        <a href="/2016/05/10/RFID-Twisted/" class="article-date">
-  	<time datetime="2016-05-10T04:34:08.598Z" itemprop="datePublished">2016-05-10</time>
-</a>
-    </div>
-    
-    <div class="article-inner">
-        
-        <input type="hidden" class="isFancy"/>
-        
-        
-        <header class="article-header">
-            
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/10/RFID-Twisted/">Twisted解析RFID数据传输整理</a>
-    </h1>
-  
-
-        </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-            
-            <p><strong>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</strong></p>
-<h2 id="一-_发送相关:">一. 发送相关:</h2><ol>
-<li><code>self.transport.write()</code>函数只能发送<strong>字符串</strong>类型的参数!!!</li>
-<li><p><code>RFID</code>只接收字节流的指令码!!!</p>
-            
-        </div>
-        
-        <div class="article-info article-info-index">
-            
-            
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RFID/">RFID</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Twisted/">Twisted</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
-	</div>
-
-            
-
-            
-            <p class="article-more-link">
-                <a 
-                   href="/2016/05/10/RFID-Twisted/#more">more >></a>
-            </p>
-            
-            <div class="clearfix"></div>
-        </div>
-        
-    </div>
-    
-</article>
-
-
-
-
-
-  
-    <article id="post-py-decorator" class="article article-type-post" itemscope
-         itemprop="blogPost">
-    
-    <div class="article-meta">
-        <a href="/2016/05/10/py-decorator/" class="article-date">
-  	<time datetime="2016-05-10T04:34:04.182Z" itemprop="datePublished">2016-05-10</time>
-</a>
-    </div>
-    
-    <div class="article-inner">
-        
-        <input type="hidden" class="isFancy"/>
-        
-        
-        <header class="article-header">
-            
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/10/py-decorator/">python中装饰器的深度剖析!</a>
-    </h1>
-  
-
-        </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-            
-            <p><strong>本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh">署名-非商业用途-保持一致</a>的创作共用协议.</strong></p>
-<p>自定义的修饰器.<br>一个不带参数的装饰器:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="decorator">@decorator</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure></p>
-<p>上面这段代码就等于下面的实现:<br>
-            
-        </div>
-        
-        <div class="article-info article-info-index">
-            
-            
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
-	</div>
-
-            
-
-            
-            <p class="article-more-link">
-                <a 
-                   href="/2016/05/10/py-decorator/#more">more >></a>
             </p>
             
             <div class="clearfix"></div>

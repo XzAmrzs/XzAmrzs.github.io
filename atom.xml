@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://happyxzp.com/"/>
-  <updated>2016-05-10T04:34:53.206Z</updated>
+  <updated>2016-05-23T04:19:18.119Z</updated>
   <id>http://happyxzp.com/</id>
   
   <author>
@@ -14,6 +14,197 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用Sockjs-Twisted实现的WebSocket服务器</title>
+    <link href="http://happyxzp.com/2016/05/23/%E4%BD%BF%E7%94%A8Sockjs-Twisted%E5%AE%9E%E7%8E%B0%E7%9A%84WebSocket%E6%9C%8D%E5%8A%A1%E5%99%A8/"/>
+    <id>http://happyxzp.com/2016/05/23/使用Sockjs-Twisted实现的WebSocket服务器/</id>
+    <published>2016-05-23T04:19:18.119Z</published>
+    <updated>2016-05-23T04:19:18.119Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;strong&gt;本博客采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;SockJS 是一个浏览器上运行的 JavaScript 库，如果浏览器不支持 WebSocket，该库可以模拟对 WebSocket 的支持，实现浏览器和 Web 服务器之间低延迟、全双工、跨域的通讯通道。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;首先先说一下自己使用该库的场景——需要做一个类似&lt;code&gt;网页版的串口调试助手&lt;/code&gt;这样的一个工具.即需要对串口收上来的数据即时传输到浏览器，从而使得web端进行数据的实时展示.而且前台是可以进行串口的设置，也可以在网页端发送数据给串口，实现全双工通信.&lt;/p&gt;
+&lt;p&gt;具体的一部分功能如下图所示:&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-0fe607c439038779.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;Flask+Bootstrap实现的简单界面&quot;&gt;&lt;/p&gt;
+&lt;p&gt;这就是一个典型的&lt;code&gt;WebSocket&lt;/code&gt;使用场景了.(低延迟、长连接、全双工)&lt;/p&gt;
+&lt;p&gt;所以就决定使用&lt;code&gt;WebSocket&lt;/code&gt;来进行交互的主要工作,但是考虑到当前校园环境普遍存在浏览器版本过低不支持&lt;code&gt;Html5&lt;/code&gt;(&lt;code&gt;Websocket&lt;/code&gt;是&lt;code&gt;HTML5&lt;/code&gt;以后新出的协议)的情况,就采用了&lt;code&gt;SockJs&lt;/code&gt;技术&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Sockjs&lt;/code&gt;简单的介绍已经在本文开头提到过了,我假设你已经懂了一点&lt;code&gt;WebSocket&lt;/code&gt;技术和一些&lt;code&gt;Twisted&lt;/code&gt;框架的简单使用方法。&lt;/p&gt;
+&lt;h2 id=&quot;首先来看看典型的服务端的编写:&quot;&gt;首先来看看典型的&lt;a href=&quot;https://github.com/DesertBus/sockjs-twisted&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;服务端&lt;/a&gt;的编写:&lt;/h2&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; reactor&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet.protocol &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; Factory, Protocol&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; txsockjs.factory &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; SockJSMultiFactory&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; txsockjs.utils &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; broadcast&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;EchoProtocol&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Protocol)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;dataReceived&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, data)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        self.transport.write(data)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ChatProtocol&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Protocol)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;connectionMade&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; hasattr(self.factory, &lt;span class=&quot;string&quot;&gt;&quot;transports&quot;&lt;/span&gt;):&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            self.factory.transports = set()&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        self.factory.transports.add(self.transport)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;dataReceived&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, data)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        broadcast(data, self.factory.transports)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;connectionLost&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, reason)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        self.factory.transports.remove(self.transport)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;f = SockJSMultiFactory()&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;f.addFactory(Factory.forProtocol(EchoProtocol), &lt;span class=&quot;string&quot;&gt;&quot;echo&quot;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;f.addFactory(Factory.forProtocol(ChatProtocol), &lt;span class=&quot;string&quot;&gt;&quot;chat&quot;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;reactor.listenTCP(&lt;span class=&quot;number&quot;&gt;8080&lt;/span&gt;, f)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;reactor.run()&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这时,访问&lt;a href=&quot;http://localhost:8080/echo&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://localhost:8080/echo&lt;/a&gt; and &lt;a href=&quot;http://localhost:8080/chat&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://localhost:8080/chat&lt;/a&gt;&lt;br&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-a6e6327cdf1ccd0c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;运行成功&quot;&gt;&lt;br&gt;可是现在只是能看到服务器端运行成功了而已数据什么的还都无法看到,&lt;strong&gt;最关键的是要整合到网页上去&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&quot;整合到网页:&quot;&gt;整合到网页:&lt;/h2&gt;&lt;p&gt;我们可以使用 &lt;code&gt;txsockjs.factory.SockJSResource&lt;/code&gt;来完成这个工作:&lt;/p&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; reactor&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet.protocol &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; Factory, Protocol&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.web &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; resource, server&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; txsockjs.factory &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; SockJSResource&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# 这里放置刚才ChatProtocol和EchoProtocol的定义&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;root = resource.Resource()&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;root.putChild(&lt;span class=&quot;string&quot;&gt;&quot;echo&quot;&lt;/span&gt;, SockJSResource(Factory.forProtocol(EchoProtocol)))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;root.putChild(&lt;span class=&quot;string&quot;&gt;&quot;chat&quot;&lt;/span&gt;, SockJSResource(Factory.forProtocol(ChatProtocol)))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;site = server.Site(root)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;reactor.listenTCP(&lt;span class=&quot;number&quot;&gt;8080&lt;/span&gt;, site)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;reactor.run()&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;至此、一个Sockjs-Twisted服务端已经实现完毕.&lt;br&gt;现在我们来使用Flask来结合Twisted实现Twisted数据的展示&lt;br&gt;&lt;strong&gt;这里我使用了&lt;code&gt;Flask-Twisted&lt;/code&gt;第三方库来实现这个功能，它封装了Twisted服务器的数据转发到了&lt;code&gt;WSGI&lt;/code&gt;应用中，现在我们这个WSGI被认为是&lt;code&gt;Flask&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;使用方法也很简单:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; flask &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; Flask&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; flask.ext.twisted &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; Twisted&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; EchoFactory &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; EchoFactory&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;app = Flask(__name__)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;twisted = Twisted(app)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;e = EchoFactory(&lt;span class=&quot;string&quot;&gt;&#39;echo&#39;&lt;/span&gt;, Protocol)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;twisted.add_resource(&lt;span class=&quot;string&quot;&gt;&quot;echo&quot;&lt;/span&gt;, SockJSResource(e))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; __name__ == &lt;span class=&quot;string&quot;&gt;&quot;__main__&quot;&lt;/span&gt;: &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    app.run()&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;这里的EchoFactory是我自己覆写的一个:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# coding=utf-8&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet.protocol &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; Factory&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;SockjsFactory&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Factory)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, name=None, protocol=None)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        self.instanceFactoryName = name&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        self.protocol = protocol&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;注意这里的&lt;code&gt;echo&lt;/code&gt;, 这个是你的&lt;code&gt;resource&lt;/code&gt;资源的名字,后面的客户端是要用到的.而&lt;br&gt;&lt;code&gt;e = EchoFactory(&amp;#39;echo&amp;#39;, Protocol)&lt;/code&gt;和&lt;br&gt;&lt;code&gt;twisted.add_resource(&amp;quot;echo&amp;quot;, SockJSResource(e))&lt;/code&gt;这句话在&lt;code&gt;Flask-Twitsted&lt;/code&gt;库中代表的含义就是&lt;br&gt;&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;root = resource.Resource()&amp;#10;root.putChild(&amp;#34;echo&amp;#34;, SockJSResource(Factory.forProtocol(EchoProtocol)))&amp;#10;root.putChild(&amp;#34;chat&amp;#34;, SockJSResource(Factory.forProtocol(ChatProtocol)))&amp;#10;site = server.Site(root)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;所以到现在完整的Sockjs-Twisted客户端代码应该如下:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# coding=utf-8&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet.protocol &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; Factory&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; txsockjs.factory &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; SockJSResource&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;EchoFactory&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Factory)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, name=None, protocol=None)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        self.instanceFactoryName = name&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        self.protocol = protocol&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; twisted.internet.protocol &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; Protocol&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;EchoProtocol&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Protocol)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;connectionMade&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; hasattr(self.factory, &lt;span class=&quot;string&quot;&gt;&quot;transports&quot;&lt;/span&gt;):&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            self.factory.transports = set()&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        self.factory.transports.add(self.transport)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;dataReceived&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(self, data)&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;print&lt;/span&gt; data&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        self.transport.write(data)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; flask &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; Flask, render_template&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; flask.ext.twisted &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; Twisted&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;app = Flask(__name__)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;twisted = Twisted(app)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;e = EchoFactory(&lt;span class=&quot;string&quot;&gt;&#39;echo&#39;&lt;/span&gt;, EchoProtocol)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;twisted.add_resource(&lt;span class=&quot;string&quot;&gt;&quot;echo&quot;&lt;/span&gt;, SockJSResource(e))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;@app.route(&quot;/&quot;)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; render_template(&lt;span class=&quot;string&quot;&gt;&#39;index.html&#39;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; __name__ == &lt;span class=&quot;string&quot;&gt;&quot;__main__&quot;&lt;/span&gt;:&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    app.run(debug=&lt;span class=&quot;keyword&quot;&gt;True&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;h2 id=&quot;Sockjs-客户端&quot;&gt;Sockjs-客户端&lt;/h2&gt;&lt;p&gt;再来看看一个典型的&lt;a href=&quot;https://github.com/sockjs/sockjs-client&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Sockjs客户端&lt;/a&gt;:&lt;br&gt;&lt;code&gt;sockjsClient.js&lt;/code&gt;&lt;br&gt;&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; sock = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; SockJS(&lt;span class=&quot;string&quot;&gt;&#39;http://mydomain.com/my_prefix&#39;&lt;/span&gt;); &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;sock.onopen = &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;console&lt;/span&gt;.log(&lt;span class=&quot;string&quot;&gt;&#39;open&#39;&lt;/span&gt;); &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;sock.onmessage = &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;e&lt;/span&gt;) &lt;/span&gt;&amp;#123; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;console&lt;/span&gt;.log(&lt;span class=&quot;string&quot;&gt;&#39;message&#39;&lt;/span&gt;, e.data); &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;sock.onclose = &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;) &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;console&lt;/span&gt;.log(&lt;span class=&quot;string&quot;&gt;&#39;close&#39;&lt;/span&gt;); &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;sock.send(&lt;span class=&quot;string&quot;&gt;&#39;test&#39;&lt;/span&gt;); &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;sock.close();&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;其中&lt;code&gt;http://mydomain.com/my_prefix&lt;/code&gt;这段就是你的资源名称，假设你要给你网站路由传输数据, 那么就用上面的&lt;code&gt;echo&lt;/code&gt;路由就为:&lt;code&gt;http://localhost:5000/echo&lt;/code&gt;，在想使用这个客户端的网页里面包含这个&lt;code&gt;sockjs&lt;/code&gt;客户端(就是把这个脚本include进那个html就行了)就大功告成了.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;index.html&lt;/code&gt;的代码主要就是这两行&lt;br&gt;&lt;figure class=&quot;highlight xml&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;script&lt;/span&gt; &lt;span class=&quot;attribute&quot;&gt;src&lt;/span&gt;=&lt;span class=&quot;value&quot;&gt;&quot;../static/sockjs/sockjs.min.js&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;undefined&quot;&gt;&lt;/span&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;script&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;script&lt;/span&gt; &lt;span class=&quot;attribute&quot;&gt;src&lt;/span&gt;=&lt;span class=&quot;value&quot;&gt;&quot;../static/sockjs/sockjsClient.js&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;undefined&quot;&gt;&lt;/span&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;script&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;直接使用控制台就可以看到效果，这里我让web端发送“test”作为测试数据:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-a8f28d478e2f686b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;web端发送test&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/311496-9e06469db8b1fdf4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;服务器端接收test数据&quot;&gt;&lt;/p&gt;
+&lt;p&gt; 终于总结完了, 呼呼!&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;本博客采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;SockJS 是一个浏览器上运行的 JavaScript 库，如果浏览器不支持 WebSocket，该库可以模拟对 WebSocket 的支持，实现浏览器和 Web 服务器之间低延迟、全双工、跨域的通讯通道。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;首先先说一下自己使用该库的场景——需要做一个类似&lt;code&gt;网页版的串口调试助手&lt;/code&gt;这样的一个工具.即需要对串口收上来的数据即时传输到浏览器，从而使得web端进行数据的实时展示.而且前台是可以进行串口的设置，也可以在网页端发送数据给串口，实现全双工通信.&lt;/p&gt;
+&lt;p&gt;具体的一部分功能如下图所示:&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="Flask" scheme="http://happyxzp.com/tags/Flask/"/>
+    
+      <category term="Twisted" scheme="http://happyxzp.com/tags/Twisted/"/>
+    
+      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
+    
+      <category term="websocket" scheme="http://happyxzp.com/tags/websocket/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Twisted解析RFID数据传输整理</title>
+    <link href="http://happyxzp.com/2016/05/23/RFID-Twisted/"/>
+    <id>http://happyxzp.com/2016/05/23/RFID-Twisted/</id>
+    <published>2016-05-23T04:15:26.528Z</published>
+    <updated>2016-05-10T04:34:08.597Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&quot;一-_发送相关:&quot;&gt;一. 发送相关:&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;self.transport.write()&lt;/code&gt;函数只能发送&lt;strong&gt;字符串&lt;/strong&gt;类型的参数!!!&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;RFID&lt;/code&gt;只接收字节流的指令码!!!&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h3 id=&quot;所以:&quot;&gt;所以:&lt;/h3&gt;&lt;p&gt;(1). 可直接发送字节流的字符串表示&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;data = ‘\xff\xff\xf1\x07\x06\xf1’ &lt;code&gt;#类型是str,但打印出来是无法识别的字节码&lt;/code&gt;&lt;br&gt;self.transport.write(data)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;(2). 给参数赋值字符串指令码(此时并不是字节流所以要进行下一步)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;dataStr =’FF FF F1 06 06 F1’&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;然后用&lt;code&gt;bytearray.fromhex(dataStr)&lt;/code&gt;将&lt;strong&gt;字符串转换成字节流&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;byteData=bytearray.fromhex(dataStr)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;最后将&lt;strong&gt;字节流转换成字符串&lt;/strong&gt;进行发送&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;self.transport.write(str(bytedata))&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&quot;二-_接收相关&quot;&gt;二. 接收相关&lt;/h1&gt;&lt;ol&gt;
+&lt;li&gt;从RFID接收过来的数据是字节流的字符串表示(即&lt;code&gt;字节串&lt;/code&gt;,字节串其实就是字节流).类型是&lt;code&gt;str&lt;/code&gt;.&lt;code&gt;print&lt;/code&gt;出来是无法识别的字节码同&lt;code&gt;一中的(1)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;实践证明&lt;code&gt;datareceived&lt;/code&gt;对&lt;code&gt;RFID&lt;/code&gt;传过来的数据是&lt;strong&gt;一个字节一个字节&lt;/strong&gt;的进行接收的,这个函数宏观上只执行了一次,但是实际上有几个字节执行几次,一直到接受完毕为止.&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;对字节流数据进行解析(解包)的&lt;code&gt;construct&lt;/code&gt;函数,&lt;strong&gt;只接收字节串(字节流)参数&lt;/strong&gt;所以需要再转换成字节串才能进行解析&lt;/p&gt;
+&lt;h3 id=&quot;所以:-1&quot;&gt;所以:&lt;/h3&gt;&lt;p&gt;(1).先使用 &lt;code&gt;binascii.b2a_hex(data)&lt;/code&gt;或者&lt;code&gt;hexlify(data)&lt;/code&gt;.由函数意思&lt;strong&gt;binary to ascii&lt;/strong&gt;.作用是返回的二进制数据的十六进制表示.&lt;strong&gt;每一个字节的数据转换成相应的2位十六进制表示.&lt;/strong&gt;因此产生的字串是源数据两倍长度。&lt;code&gt;a2b_hex&lt;/code&gt;和&lt;code&gt;unhexlify&lt;/code&gt;则执行反向操作(所得仍然是字符串类型)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;self.data_list += binascii.b2a_hex(data) &lt;code&gt;#累加字符串,注意,字节串是不能直接进行加法的.&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;若是只进行串口的调试其实到这一步就算通了&lt;/strong&gt;&lt;br&gt;(2). 对(1)中转化成的字符串再次转化成字节流&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;byteData = bytearray.fromhex(self.data_list) &lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;(3). 对字节流中的数据进行解包处理.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;pkgs, leftovers = self.rfid.parse_pkgs(byteData)  &lt;code&gt;# 解析字节流转化为可识别的指令码存在pkgs(一个列表),剩下的存在leftovers&lt;/code&gt;&lt;br&gt;if len(pkgs) != 0 and len(leftovers) == 0:  &lt;code&gt;对数据包的正确性进行判断&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;(4). 处理数据&lt;br&gt;调用handlDatas函数.从返回的列表中取有用的数据&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&quot;一-_发送相关:&quot;&gt;一. 发送相关:&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;self.transport.write()&lt;/code&gt;函数只能发送&lt;strong&gt;字符串&lt;/strong&gt;类型的参数!!!&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;RFID&lt;/code&gt;只接收字节流的指令码!!!&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="RFID" scheme="http://happyxzp.com/tags/RFID/"/>
+    
+      <category term="Twisted" scheme="http://happyxzp.com/tags/Twisted/"/>
+    
+      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用virtualenvwrapper隔离python开发环境</title>
+    <link href="http://happyxzp.com/2016/05/23/py-virtualenv/"/>
+    <id>http://happyxzp.com/2016/05/23/py-virtualenv/</id>
+    <published>2016-05-23T04:14:24.752Z</published>
+    <updated>2016-05-10T04:33:59.869Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;背景&lt;/strong&gt;：&lt;br&gt;作为一名pythoner，使用virtualenv来隔离开发环境我相信已经不用我再介绍是为什么了。而&lt;code&gt;virtualenvwrapper&lt;/code&gt;是&lt;code&gt;virtualenv&lt;/code&gt;的一个拓展，可以让我们更加方便的使用和管理多个&lt;code&gt;virtualenv&lt;/code&gt;实例，我们通过二者对比来学习一下。&lt;br&gt;使用virtualenv的一般流程是:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;创建虚拟环境: &lt;code&gt;virtualenv venv&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;激活虚拟环境: &lt;code&gt;source venv/bin/activate&lt;/code&gt;(windows下是直接&lt;code&gt;venv\Scripts\activate&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;安装依赖包: &lt;code&gt;pip install -r requirements.txt&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;退出虚拟环境: &lt;code&gt;deactive&lt;/code&gt;  &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+原理也很简单，就是在激活了当前虚拟环境以后，&lt;code&gt;virtualenv&lt;/code&gt;会修改相关的环境变量，让命令&lt;code&gt;python&lt;/code&gt;和&lt;code&gt;pip&lt;/code&gt;均指向当前的&lt;code&gt;venv&lt;/code&gt;环境。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;接下来让我们看看virtualenvwrapper：&quot;&gt;接下来让我们看看virtualenvwrapper：&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;http://www.nowamagic.net/academy/tag/virtualenvwrapper&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;virtualenvwrapper&lt;/a&gt; 是一个建立在 &lt;code&gt;virtualenv&lt;/code&gt; 上的工具，通过它可以方便的创建/激活/管理/销毁虚拟环境。使得&lt;code&gt;virtualenv&lt;/code&gt;变得更加好用&lt;br&gt; 可以通过下面命令安装 &lt;code&gt;virtualenvwrapper&lt;/code&gt; 。&lt;br&gt;&lt;figure class=&quot;highlight cmake&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;pip &lt;span class=&quot;keyword&quot;&gt;install&lt;/span&gt; virtualenvwrapper&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;安装后，你需要配置它。下面是我的配置：&lt;br&gt;&lt;figure class=&quot;highlight xquery&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;export WORKON_HOME=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/.virtualenvs&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;export PROJECT_HOME=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/Devel&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;source &lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/.local/bin/virtualenvwrapper.sh&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;设置 &lt;code&gt;WORKON_HOME&lt;/code&gt; 和 &lt;code&gt;source $HOME/.local/bin/virtualenvwrapper.sh&lt;/code&gt; 只需要几行代码,这里我是安装了一个用户级别的virtualenvwrapper&lt;/p&gt;
+&lt;p&gt;将上面的配置添加到&lt;code&gt;~/.zshrc&lt;/code&gt;的末尾，然后将下面的命令运行一次(如果使用的&lt;code&gt;bash&lt;/code&gt;的话，是添加到&lt;code&gt;~/.bashrc&lt;/code&gt;)：&lt;br&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;source&lt;/span&gt; ~/.zshrc&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;接下来就是使用&lt;code&gt;virtualenvwrapper&lt;/code&gt;了！，来体会一下吧！&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;创建环境&lt;/li&gt;
+&lt;/ol&gt;
+&lt;figure class=&quot;highlight nginx&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;mkvirtualenv&lt;/span&gt; env1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;mkvirtualenv env2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;或者直接创建有依赖的环境:&lt;br&gt;&lt;figure class=&quot;highlight stylus&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;mkvirtualenv -r requirements&lt;span class=&quot;class&quot;&gt;.txt&lt;/span&gt; &amp;lt;env_name&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;环境创建之后，会自动进入该目录，并激活该环境。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;切换环境&lt;/p&gt;
+&lt;figure class=&quot;highlight nginx&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;workon&lt;/span&gt; env1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;workon env2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;列出已有环境&lt;/p&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;workon&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;查看当前环境已安装的 packages&lt;/p&gt;
+&lt;figure class=&quot;highlight crystal&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;variable&quot;&gt;$ &lt;/span&gt;lssitepackages&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;退出环境&lt;/p&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;deactivate&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;删除环境&lt;/p&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;rmvirtualenv&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;创建project&lt;br&gt;项目将创建到PROJECT_HOME目录下，实际上相当于在某个目录下，建了一个环境。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;mkproject&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;背景&lt;/strong&gt;：&lt;br&gt;作为一名pythoner，使用virtualenv来隔离开发环境我相信已经不用我再介绍是为什么了。而&lt;code&gt;virtualenvwrapper&lt;/code&gt;是&lt;code&gt;virtualenv&lt;/code&gt;的一个拓展，可以让我们更加方便的使用和管理多个&lt;code&gt;virtualenv&lt;/code&gt;实例，我们通过二者对比来学习一下。&lt;br&gt;使用virtualenv的一般流程是:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;创建虚拟环境: &lt;code&gt;virtualenv venv&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;激活虚拟环境: &lt;code&gt;source venv/bin/activate&lt;/code&gt;(windows下是直接&lt;code&gt;venv\Scripts\activate&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;安装依赖包: &lt;code&gt;pip install -r requirements.txt&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;退出虚拟环境: &lt;code&gt;deactive&lt;/code&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
+    
+  </entry>
   
   <entry>
     <title>几个漂亮的Bootstrap插件（已经视觉疲劳）</title>
@@ -350,75 +541,6 @@
   </entry>
   
   <entry>
-    <title>Twisted解析RFID数据传输整理</title>
-    <link href="http://happyxzp.com/2016/05/10/RFID-Twisted/"/>
-    <id>http://happyxzp.com/2016/05/10/RFID-Twisted/</id>
-    <published>2016-05-10T04:34:08.598Z</published>
-    <updated>2016-05-10T04:34:08.597Z</updated>
-    
-    <content type="html">&lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
-&lt;h2 id=&quot;一-_发送相关:&quot;&gt;一. 发送相关:&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;self.transport.write()&lt;/code&gt;函数只能发送&lt;strong&gt;字符串&lt;/strong&gt;类型的参数!!!&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;code&gt;RFID&lt;/code&gt;只接收字节流的指令码!!!&lt;/p&gt;
-&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
-&lt;h3 id=&quot;所以:&quot;&gt;所以:&lt;/h3&gt;&lt;p&gt;(1). 可直接发送字节流的字符串表示&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;data = ‘\xff\xff\xf1\x07\x06\xf1’ &lt;code&gt;#类型是str,但打印出来是无法识别的字节码&lt;/code&gt;&lt;br&gt;self.transport.write(data)&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;(2). 给参数赋值字符串指令码(此时并不是字节流所以要进行下一步)&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;dataStr =’FF FF F1 06 06 F1’&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;然后用&lt;code&gt;bytearray.fromhex(dataStr)&lt;/code&gt;将&lt;strong&gt;字符串转换成字节流&lt;/strong&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;byteData=bytearray.fromhex(dataStr)&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;最后将&lt;strong&gt;字节流转换成字符串&lt;/strong&gt;进行发送&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;self.transport.write(str(bytedata))&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h1 id=&quot;二-_接收相关&quot;&gt;二. 接收相关&lt;/h1&gt;&lt;ol&gt;
-&lt;li&gt;从RFID接收过来的数据是字节流的字符串表示(即&lt;code&gt;字节串&lt;/code&gt;,字节串其实就是字节流).类型是&lt;code&gt;str&lt;/code&gt;.&lt;code&gt;print&lt;/code&gt;出来是无法识别的字节码同&lt;code&gt;一中的(1)&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;实践证明&lt;code&gt;datareceived&lt;/code&gt;对&lt;code&gt;RFID&lt;/code&gt;传过来的数据是&lt;strong&gt;一个字节一个字节&lt;/strong&gt;的进行接收的,这个函数宏观上只执行了一次,但是实际上有几个字节执行几次,一直到接受完毕为止.&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;对字节流数据进行解析(解包)的&lt;code&gt;construct&lt;/code&gt;函数,&lt;strong&gt;只接收字节串(字节流)参数&lt;/strong&gt;所以需要再转换成字节串才能进行解析&lt;/p&gt;
-&lt;h3 id=&quot;所以:-1&quot;&gt;所以:&lt;/h3&gt;&lt;p&gt;(1).先使用 &lt;code&gt;binascii.b2a_hex(data)&lt;/code&gt;或者&lt;code&gt;hexlify(data)&lt;/code&gt;.由函数意思&lt;strong&gt;binary to ascii&lt;/strong&gt;.作用是返回的二进制数据的十六进制表示.&lt;strong&gt;每一个字节的数据转换成相应的2位十六进制表示.&lt;/strong&gt;因此产生的字串是源数据两倍长度。&lt;code&gt;a2b_hex&lt;/code&gt;和&lt;code&gt;unhexlify&lt;/code&gt;则执行反向操作(所得仍然是字符串类型)&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;self.data_list += binascii.b2a_hex(data) &lt;code&gt;#累加字符串,注意,字节串是不能直接进行加法的.&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;strong&gt;若是只进行串口的调试其实到这一步就算通了&lt;/strong&gt;&lt;br&gt;(2). 对(1)中转化成的字符串再次转化成字节流&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;byteData = bytearray.fromhex(self.data_list) &lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;(3). 对字节流中的数据进行解包处理.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;pkgs, leftovers = self.rfid.parse_pkgs(byteData)  &lt;code&gt;# 解析字节流转化为可识别的指令码存在pkgs(一个列表),剩下的存在leftovers&lt;/code&gt;&lt;br&gt;if len(pkgs) != 0 and len(leftovers) == 0:  &lt;code&gt;对数据包的正确性进行判断&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;(4). 处理数据&lt;br&gt;调用handlDatas函数.从返回的列表中取有用的数据&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
-&lt;h2 id=&quot;一-_发送相关:&quot;&gt;一. 发送相关:&lt;/h2&gt;&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;self.transport.write()&lt;/code&gt;函数只能发送&lt;strong&gt;字符串&lt;/strong&gt;类型的参数!!!&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;code&gt;RFID&lt;/code&gt;只接收字节流的指令码!!!&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="RFID" scheme="http://happyxzp.com/tags/RFID/"/>
-    
-      <category term="Twisted" scheme="http://happyxzp.com/tags/Twisted/"/>
-    
-      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
     <title>python中装饰器的深度剖析!</title>
     <link href="http://happyxzp.com/2016/05/10/py-decorator/"/>
     <id>http://happyxzp.com/2016/05/10/py-decorator/</id>
@@ -445,71 +567,6 @@
       &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;自定义的修饰器.&lt;br&gt;一个不带参数的装饰器:&lt;br&gt;&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;decorator&quot;&gt;@decorator&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;pass&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;上面这段代码就等于下面的实现:&lt;br&gt;
-    
-    </summary>
-    
-    
-      <category term="python" scheme="http://happyxzp.com/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>使用virtualenvwrapper隔离python开发环境</title>
-    <link href="http://happyxzp.com/2016/05/10/py-virtualenv/"/>
-    <id>http://happyxzp.com/2016/05/10/py-virtualenv/</id>
-    <published>2016-05-10T04:33:59.871Z</published>
-    <updated>2016-05-10T04:33:59.869Z</updated>
-    
-    <content type="html">&lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;背景&lt;/strong&gt;：&lt;br&gt;作为一名pythoner，使用virtualenv来隔离开发环境我相信已经不用我再介绍是为什么了。而&lt;code&gt;virtualenvwrapper&lt;/code&gt;是&lt;code&gt;virtualenv&lt;/code&gt;的一个拓展，可以让我们更加方便的使用和管理多个&lt;code&gt;virtualenv&lt;/code&gt;实例，我们通过二者对比来学习一下。&lt;br&gt;使用virtualenv的一般流程是:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;创建虚拟环境: &lt;code&gt;virtualenv venv&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;激活虚拟环境: &lt;code&gt;source venv/bin/activate&lt;/code&gt;(windows下是直接&lt;code&gt;venv\Scripts\activate&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;安装依赖包: &lt;code&gt;pip install -r requirements.txt&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;退出虚拟环境: &lt;code&gt;deactive&lt;/code&gt;  &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
-原理也很简单，就是在激活了当前虚拟环境以后，&lt;code&gt;virtualenv&lt;/code&gt;会修改相关的环境变量，让命令&lt;code&gt;python&lt;/code&gt;和&lt;code&gt;pip&lt;/code&gt;均指向当前的&lt;code&gt;venv&lt;/code&gt;环境。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&quot;接下来让我们看看virtualenvwrapper：&quot;&gt;接下来让我们看看virtualenvwrapper：&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;http://www.nowamagic.net/academy/tag/virtualenvwrapper&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;virtualenvwrapper&lt;/a&gt; 是一个建立在 &lt;code&gt;virtualenv&lt;/code&gt; 上的工具，通过它可以方便的创建/激活/管理/销毁虚拟环境。使得&lt;code&gt;virtualenv&lt;/code&gt;变得更加好用&lt;br&gt; 可以通过下面命令安装 &lt;code&gt;virtualenvwrapper&lt;/code&gt; 。&lt;br&gt;&lt;figure class=&quot;highlight cmake&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;pip &lt;span class=&quot;keyword&quot;&gt;install&lt;/span&gt; virtualenvwrapper&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;安装后，你需要配置它。下面是我的配置：&lt;br&gt;&lt;figure class=&quot;highlight xquery&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;export WORKON_HOME=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/.virtualenvs&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;export PROJECT_HOME=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/Devel&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;source &lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/.local/bin/virtualenvwrapper.sh&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;设置 &lt;code&gt;WORKON_HOME&lt;/code&gt; 和 &lt;code&gt;source $HOME/.local/bin/virtualenvwrapper.sh&lt;/code&gt; 只需要几行代码,这里我是安装了一个用户级别的virtualenvwrapper&lt;/p&gt;
-&lt;p&gt;将上面的配置添加到&lt;code&gt;~/.zshrc&lt;/code&gt;的末尾，然后将下面的命令运行一次(如果使用的&lt;code&gt;bash&lt;/code&gt;的话，是添加到&lt;code&gt;~/.bashrc&lt;/code&gt;)：&lt;br&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;source&lt;/span&gt; ~/.zshrc&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;接下来就是使用&lt;code&gt;virtualenvwrapper&lt;/code&gt;了！，来体会一下吧！&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;创建环境&lt;/li&gt;
-&lt;/ol&gt;
-&lt;figure class=&quot;highlight nginx&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;mkvirtualenv&lt;/span&gt; env1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;mkvirtualenv env2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;或者直接创建有依赖的环境:&lt;br&gt;&lt;figure class=&quot;highlight stylus&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;mkvirtualenv -r requirements&lt;span class=&quot;class&quot;&gt;.txt&lt;/span&gt; &amp;lt;env_name&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;环境创建之后，会自动进入该目录，并激活该环境。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;切换环境&lt;/p&gt;
-&lt;figure class=&quot;highlight nginx&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;workon&lt;/span&gt; env1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;workon env2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;列出已有环境&lt;/p&gt;
-&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;workon&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;查看当前环境已安装的 packages&lt;/p&gt;
-&lt;figure class=&quot;highlight crystal&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;variable&quot;&gt;$ &lt;/span&gt;lssitepackages&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;退出环境&lt;/p&gt;
-&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;deactivate&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;删除环境&lt;/p&gt;
-&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;rmvirtualenv&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;创建project&lt;br&gt;项目将创建到PROJECT_HOME目录下，实际上相当于在某个目录下，建了一个环境。&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;mkproject&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;strong&gt;本博客属于原创文章，采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本博客文章必须也遵循&lt;a href=&quot;http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh&quot;&gt;署名-非商业用途-保持一致&lt;/a&gt;的创作共用协议.&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;背景&lt;/strong&gt;：&lt;br&gt;作为一名pythoner，使用virtualenv来隔离开发环境我相信已经不用我再介绍是为什么了。而&lt;code&gt;virtualenvwrapper&lt;/code&gt;是&lt;code&gt;virtualenv&lt;/code&gt;的一个拓展，可以让我们更加方便的使用和管理多个&lt;code&gt;virtualenv&lt;/code&gt;实例，我们通过二者对比来学习一下。&lt;br&gt;使用virtualenv的一般流程是:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;创建虚拟环境: &lt;code&gt;virtualenv venv&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;激活虚拟环境: &lt;code&gt;source venv/bin/activate&lt;/code&gt;(windows下是直接&lt;code&gt;venv\Scripts\activate&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;安装依赖包: &lt;code&gt;pip install -r requirements.txt&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;退出虚拟环境: &lt;code&gt;deactive&lt;/code&gt;
     
     </summary>
     
